@@ -6,6 +6,8 @@ import DashboardGuru from '../pages/Guru/Dashboard';
 import CatatPelanggaran from '../pages/Guru/CatatPelanggaran';
 import Individu from '../pages/Guru/Individu';
 import Kelas from '../pages/Guru/Kelas';
+import HasilSiswa from '../pages/Guru/HasilSiswa';
+import IsiKelas from '../pages/Guru/IsiKelas';
 import Materi from '../pages/Guru/Materi';
 import DashboardSiswa from '../pages/Siswa/Dashboard';
 import LihatPelanggaranSiswa from '../pages/Siswa/LihatPelanggaran';
@@ -29,6 +31,8 @@ const AppRoutes = () => {
         <Route path="/catat-pelanggaran" element={<CatatPelanggaran />} />
         <Route path="/individu" element={<Individu />} />
         <Route path="/kelas" element={<Kelas />} />
+        <Route path="/hasil-siswa" element={<HasilSiswa />} />
+        <Route path="/kelas/:namaKelas" element={<IsiKelas />} />
         <Route path="/materi" element={<Materi />} />
 
         <Route path="/dashboard-siswa" element={<DashboardSiswa />} />
