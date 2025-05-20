@@ -37,7 +37,6 @@ const HasilSiswa = () => {
 
     return (
         <div className="flex flex-col items-center p-5 min-h-screen ">
-            {/* Tombol Kembali di Atas */}
             <div className="w-full max-w-4xl mb-4 print:hidden">
                 <button
                     onClick={handleBack}
@@ -89,7 +88,7 @@ const HasilSiswa = () => {
                         mencerminkan kemampuan siswa dalam menjaga perilaku secara konsisten dan positif.
                     </p>
                 </div>
-
+ 
                 <div className="mt-8">
                     <h2 className="text-xl font-semibold mb-2 text-indigo-600">Catatan / Apresiasi Guru</h2>
                     {isEditing ? (

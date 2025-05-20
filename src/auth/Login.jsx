@@ -72,7 +72,6 @@ const Login = () => {
                 </form>
         </div>
 
-        {/* Bagian Kanan */}
         <div
             className="w-full lg:w-1/2 flex items-center justify-center"
             style={{
