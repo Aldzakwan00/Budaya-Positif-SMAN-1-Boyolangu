@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
+import Swal from 'sweetalert2';
 import { getAllStudents, getViolation, postViolation } from '../../services/api';
 
 const CatatPelanggaran = () => {
@@ -89,7 +90,14 @@ const CatatPelanggaran = () => {
             const result = await postViolation(formData);
             console.log('Response dari server:', result);
         
-            alert('Pelanggaran berhasil dicatat!');
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: 'Pelanggaran berhasil dicatat.',
+                showConfirmButton: true,
+                timer: 2000
+            });
+            
             setTingkat('');
             setKelas('');
             setNama('');
@@ -100,7 +108,11 @@ const CatatPelanggaran = () => {
             setJam('');
         } catch (err) {
             console.error('Gagal mencatat pelanggaran:', err.response?.data || err.message);
-            alert('Gagal mencatat pelanggaran. Silakan coba lagi.');
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Gagal mencatat pelanggaran. Silakan coba lagi.',
+            });
         }
         
     };

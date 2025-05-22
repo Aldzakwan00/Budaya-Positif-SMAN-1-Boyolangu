@@ -10,10 +10,6 @@ const IsiKelas = () => {
     const [siswaDenganPoin, setSiswaDenganPoin] = useState([]);
 
     useEffect(() => {
-        console.log('Data Siswa:', siswa);
-        console.log('Data Pelanggaran:', violationData);
-
-        // Gabungkan data siswa dengan poin jika ada di violationData
         const mergedData = siswa.map((s) => {
             const pelanggaran = violationData.find(
                 (v) => parseInt(v.id_student) === s.id
@@ -77,6 +73,7 @@ const IsiKelas = () => {
                             <Link
                                 key={s.id || index}
                                 to="/hasil-siswa"
+                                state={{ siswa: s, namaKelas }}
                                 className="block p-5 bg-white rounded-xl shadow hover:shadow-md hover:bg-gray-100 transition transform hover:scale-[1.02]"
                             >
                                 <div className="flex justify-between items-center">
@@ -86,6 +83,7 @@ const IsiKelas = () => {
                                     </div>
                                 </div>
                             </Link>
+
                         ))
                     )}
                 </div>

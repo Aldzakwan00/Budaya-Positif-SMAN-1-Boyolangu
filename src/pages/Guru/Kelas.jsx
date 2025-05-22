@@ -36,10 +36,6 @@ const Kelas = () => {
     const handleCardClick = async (item) => {
         try {
             const response = await getClassViolation({ id_class: item.id_class });
-            console.log('✅ Response berhasil:', response); // cek seluruh response
-            console.log('📦 Response data:', response.data); // hanya body JSON dari response
-    
-            // setelah post sukses, navigate ke halaman kelas
             navigate(`/kelas/${item.id_class}`, {
                 state: {
                     id_class: item.id_class,

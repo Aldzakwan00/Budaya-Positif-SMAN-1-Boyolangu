@@ -1,10 +1,15 @@
 import React, { useRef, useState, useEffect } from 'react';
 import fotoSiswa from '../../assets/img/Anak_Baik.jpeg';
+import { useLocation } from 'react-router-dom';
+
 
 const HasilSiswa = () => {
     const printRef = useRef();
     const [isEditing, setIsEditing] = useState(false);
     const [catatan, setCatatan] = useState('');
+    const location = useLocation();
+    const { siswa, namaKelas } = location.state || {};
+
 
     useEffect(() => {
         const savedCatatan = localStorage.getItem('catatan');
@@ -65,13 +70,13 @@ const HasilSiswa = () => {
 
                     <div className="md:w-2/3 space-y-2 text-lg text-gray-800">
                         <div>
-                            <span className="font-semibold">Nama:</span> Denis
+                            <span className="font-semibold">Nama:</span> {siswa?.name || '-'}
                         </div>
                         <div>
-                            <span className="font-semibold">Kelas:</span> X-1
+                            <span className="font-semibold">Kelas:</span> {namaKelas || '-'}
                         </div>
                         <div>
-                            <span className="font-semibold">Jumlah Poin:</span> 5
+                            <span className="font-semibold">Jumlah Poin:</span> {siswa?.poin ?? 0}
                         </div>
                         <div>
                             <span className="font-semibold">Kategori:</span>{' '}
@@ -83,10 +88,11 @@ const HasilSiswa = () => {
                 <div className="mt-8">
                     <h2 className="text-xl font-semibold mb-2 text-indigo-600">Keterangan</h2>
                     <p className="text-gray-700 text-justify leading-relaxed">
-                        Selama mengikuti kegiatan belajar di sekolah, Denis menunjukkan sikap sangat baik dalam hal
-                        kedisiplinan, tanggung jawab, dan kepatuhan terhadap peraturan. Jumlah poin pelanggaran yang rendah
-                        mencerminkan kemampuan siswa dalam menjaga perilaku secara konsisten dan positif.
+                        {siswa?.poin < 5
+                            ? `${siswa?.name} menunjukkan sikap sangat baik dalam hal kedisiplinan dan kepatuhan terhadap peraturan.`
+                            : `${siswa?.name} perlu mendapatkan perhatian lebih dalam hal kedisiplinan dan kepatuhan terhadap peraturan.`}
                     </p>
+
                 </div>
  
                 <div className="mt-8">
