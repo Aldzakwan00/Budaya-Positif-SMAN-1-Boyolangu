@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getAllStudents } from '../../services/api';
+import { getAllStudents, getClassViolation } from '../../services/api';
 
 const Individu = () => {
     const [dataMap, setDataMap] = useState({});
@@ -146,7 +146,7 @@ const Individu = () => {
                                         <div className="text-sm text-gray-500">Tingkat: {tingkat.toUpperCase()} - Kelas: {kelas}</div>
                                     </div>
                                     <div className="bg-indigo-100 text-indigo-800 px-4 py-1 rounded-full font-semibold">
-                                        Poin: <span className="italic text-gray-500">[belum ada]</span>
+                                        Poin: 0
                                     </div>
                                 </div>
                             </Link>

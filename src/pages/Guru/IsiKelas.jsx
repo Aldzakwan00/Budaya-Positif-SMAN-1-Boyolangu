@@ -1,21 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 
 const IsiKelas = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { namaKelas, siswa = [] } = location.state || {};
+    const { namaKelas, siswa = [], violationData = [] } = location.state || {};
 
     const [sortType, setSortType] = useState('');
+    const [siswaDenganPoin, setSiswaDenganPoin] = useState([]);
+
+    useEffect(() => {
+        console.log('Data Siswa:', siswa);
+        console.log('Data Pelanggaran:', violationData);
+
+        // Gabungkan data siswa dengan poin jika ada di violationData
+        const mergedData = siswa.map((s) => {
+            const pelanggaran = violationData.find(
+                (v) => parseInt(v.id_student) === s.id
+            );
+            return {
+                ...s,
+                poin: pelanggaran ? parseInt(pelanggaran.total_points) : 0,
+            };
+        });
+
+        setSiswaDenganPoin(mergedData);
+    }, [siswa, violationData]);
 
     const getSortedData = () => {
-        let sorted = [...siswa];
+        let sorted = [...siswaDenganPoin];
         if (sortType === 'az') {
             sorted.sort((a, b) => a.name.localeCompare(b.name));
         } else if (sortType === 'max') {
-            sorted.sort((a, b) => (b.poin || 0) - (a.poin || 0));
+            sorted.sort((a, b) => b.poin - a.poin);
         } else if (sortType === 'min') {
-            sorted.sort((a, b) => (a.poin || 0) - (b.poin || 0));
+            sorted.sort((a, b) => a.poin - b.poin);
         }
         return sorted;
     };
@@ -50,18 +69,20 @@ const IsiKelas = () => {
 
                 <div className="space-y-4">
                     {getSortedData().length === 0 ? (
-                        <div className="text-gray-500 text-center text-lg">Tidak ada siswa di kelas ini.</div>
+                        <div className="text-gray-500 text-center text-lg">
+                            Tidak ada siswa di kelas ini.
+                        </div>
                     ) : (
-                        getSortedData().map((siswa, index) => (
+                        getSortedData().map((s, index) => (
                             <Link
-                                key={siswa.id || index}
+                                key={s.id || index}
                                 to="/hasil-siswa"
                                 className="block p-5 bg-white rounded-xl shadow hover:shadow-md hover:bg-gray-100 transition transform hover:scale-[1.02]"
                             >
                                 <div className="flex justify-between items-center">
-                                    <div className="text-lg font-semibold text-gray-800">{siswa.name}</div>
+                                    <div className="text-lg font-semibold text-gray-800">{s.name}</div>
                                     <div className="text-sm font-medium text-indigo-600">
-                                        Poin: {siswa.poin ?? '—'}
+                                        Poin: {s.poin}
                                     </div>
                                 </div>
                             </Link>

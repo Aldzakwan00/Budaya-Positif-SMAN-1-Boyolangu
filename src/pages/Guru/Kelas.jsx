@@ -1,28 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { getAllStudents } from '../../services/api';
+import { useNavigate } from 'react-router-dom';
+import { getAllStudents, getClassViolation } from '../../services/api';
 
 const Kelas = () => {
     const [kelas, setKelas] = useState([]);
     const [filteredKelas, setFilteredKelas] = useState([]);
     const [selectedGrade, setSelectedGrade] = useState('All');
     const [grades, setGrades] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchKelas = async () => {
             try {
                 const data = await getAllStudents();
-
                 const allKelas = data.flatMap((item) =>
                     item.class_name.map((kelasItem) => ({
                         grade: item.grade,
+                        id_class: kelasItem.id_class,
                         name: kelasItem.class_name,
                         student: kelasItem.student,
                     }))
                 );
-
                 const uniqueGrades = [...new Set(allKelas.map(k => k.grade))];
-
                 setKelas(allKelas);
                 setFilteredKelas(allKelas);
                 setGrades(uniqueGrades);
@@ -34,14 +33,30 @@ const Kelas = () => {
         fetchKelas();
     }, []);
 
+    const handleCardClick = async (item) => {
+        try {
+            const response = await getClassViolation({ id_class: item.id_class });
+            console.log('✅ Response berhasil:', response); // cek seluruh response
+            console.log('📦 Response data:', response.data); // hanya body JSON dari response
+    
+            // setelah post sukses, navigate ke halaman kelas
+            navigate(`/kelas/${item.id_class}`, {
+                state: {
+                    id_class: item.id_class,
+                    namaKelas: item.name,
+                    siswa: item.student,
+                    violationData: response.data,
+                },
+            });
+        } catch (error) {
+            console.error('Gagal melakukan post pelanggaran kelas', error);
+        }
+    };
+
     const handleFilterChange = (e) => {
         const grade = e.target.value;
         setSelectedGrade(grade);
-        if (grade === 'All') {
-            setFilteredKelas(kelas);
-        } else {
-            setFilteredKelas(kelas.filter(k => k.grade === grade));
-        }
+        setFilteredKelas(grade === 'All' ? kelas : kelas.filter(k => k.grade === grade));
     };
 
     const getRandomColor = () => {
@@ -70,18 +85,15 @@ const Kelas = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-4xl">
-                {filteredKelas.map((item, index) => (
-                    <Link
-                        to={`/kelas/${item.name}`}
-                        state={{ namaKelas: item.name, 
-                                grade: item.grade, 
-                                siswa: item.student, }}
-                        key={item.name}
-                        className="transition-all duration-300 transform hover:scale-105 hover:shadow-xl p-6 text-center rounded-xl shadow-md text-white font-semibold"
+                {filteredKelas.map((item) => (
+                    <div
+                        key={`${item.id_class}-${item.name}`}
+                        onClick={() => handleCardClick(item)}
+                        className="cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-xl p-6 text-center rounded-xl shadow-md text-white font-semibold"
                         style={{ backgroundColor: getRandomColor() }}
                     >
                         {item.name}
-                    </Link>
+                    </div>
                 ))}
             </div>
         </div>
