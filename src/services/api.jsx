@@ -45,3 +45,13 @@ export const getClassViolation = async (data) => {
       throw error;
   }
 };
+
+export const getStudentViolation = async (data) => {
+    try {
+        const response = await axios.post(`${API_URL}/getStudentViolation`, data);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching student violation:', error);
+        throw error;
+    }
+}
