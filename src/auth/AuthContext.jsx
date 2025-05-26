@@ -12,8 +12,9 @@ export const AuthProvider = ({ children }) => {
     const login = async (credentials) => {
         const result = await api.login(credentials);
 
-        if (result.error) {
-            throw new Error(result.error);
+        if (!result || result.error || !result.token || !result.user || !result.role) {
+            // Jangan console.error di sini, cukup kembalikan error
+            return { error: result?.error || 'Login gagal. Coba lagi.' };
         }
 
         const userData = {
@@ -26,7 +27,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('user', JSON.stringify(userData));
         setUser(userData);
 
-        return userData.role;
+        return { role: userData.role };
     };
 
     const logout = () => {

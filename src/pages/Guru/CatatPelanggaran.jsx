@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Select from 'react-select';
 import Swal from 'sweetalert2';
 import { getAllStudents, getViolation, postViolation } from '../../services/api';
@@ -15,6 +15,12 @@ const CatatPelanggaran = () => {
     const [tanggal, setTanggal] = useState('');
     const [hari, setHari] = useState('');
     const [jam, setJam] = useState('');
+    const [useCamera, setUseCamera] = useState(false);
+
+    const videoRef = useRef(null);
+    const canvasRef = useRef(null);
+    const streamRef = useRef(null);
+      
 
     useEffect(() => {
         const fetchData = async () => {
@@ -46,6 +52,56 @@ const CatatPelanggaran = () => {
         fetchData();
     }, []);
 
+    useEffect(() => {
+        if (useCamera) {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(stream => {
+                        videoRef.current.srcObject = stream;
+                        streamRef.current = stream;
+                        videoRef.current.play();
+                    })
+                    .catch(err => {
+                        console.error('Gagal akses kamera:', err);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error Kamera',
+                            text: 'Tidak dapat mengakses kamera. Pastikan izin sudah diberikan.',
+                        });
+                        setUseCamera(false);
+                    });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error Kamera',
+                    text: 'Browser Anda tidak mendukung akses kamera.',
+                });
+                setUseCamera(false);
+            }
+        } else {
+            if (streamRef.current) {
+                streamRef.current.getTracks().forEach(track => track.stop());
+                streamRef.current = null;
+            }
+            setBukti(null); 
+        }
+    }, [useCamera]);
+
+    const capturePhoto = () => {
+        const video = videoRef.current;
+        const canvas = canvasRef.current;
+        if (video && canvas) {
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob(blob => {
+                const file = new File([blob], 'camera_capture.png', { type: 'image/png' });
+                setBukti(file);
+            }, 'image/png');
+        }
+    };
+
     const getSiswaList = () => {
         if (tingkat && kelas && dataMap[tingkat] && dataMap[tingkat][kelas]) {
             return dataMap[tingkat][kelas];
@@ -67,6 +123,15 @@ const CatatPelanggaran = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        Swal.fire({
+            title: 'Memproses...',
+            text: 'Mohon tunggu sebentar',
+            allowOutsideClick: false,
+            didOpen: () => {
+              Swal.showLoading();
+            }
+          });
+
         const id_student = getSelectedStudentId();
         if (!id_student || !selectedViolation || !bukti) {
             alert('Harap lengkapi semua data terlebih dahulu!');
@@ -82,14 +147,8 @@ const CatatPelanggaran = () => {
         formData.append('jam', jam);
 
         try {
-            console.log('Data yang dikirim:');
-            for (let pair of formData.entries()) {
-                console.log(`${pair[0]}:`, pair[1]);
-            }
-        
-            const result = await postViolation(formData);
-            console.log('Response dari server:', result);
-        
+            await postViolation(formData); 
+
             Swal.fire({
                 icon: 'success',
                 title: 'Berhasil!',
@@ -97,7 +156,7 @@ const CatatPelanggaran = () => {
                 showConfirmButton: true,
                 timer: 2000
             });
-            
+
             setTingkat('');
             setKelas('');
             setNama('');
@@ -106,34 +165,61 @@ const CatatPelanggaran = () => {
             setTanggal('');
             setHari('');
             setJam('');
+            setUseCamera(false);
         } catch (err) {
-            console.error('Gagal mencatat pelanggaran:', err.response?.data || err.message);
             Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
                 text: 'Gagal mencatat pelanggaran. Silakan coba lagi.',
             });
         }
-        
     };
 
     return (
-        <div className='flex flex-col items-center h-screen p-5 text-center'>
-            <h1 className='text-3xl font-semibold text-gray-800 mb-10'>KONSEKUENSI POIN BUDAYA POSITIF</h1>
-            <p className='text-lg text-gray-600 mb-12'>Guru dan staf Karyawan dapat memberikan poin konsekuensi kepada siswa</p>
+        <div className='flex flex-col items-center p-5 text-center min-h-screen'>
+            <h1 className='text-3xl font-semibold text-[#186c7c] mb-10'>KONSEKUENSI POIN BUDAYA POSITIF</h1>
             <div className='bg-white p-8 rounded-lg shadow-lg w-full max-w-lg'>
                 <form className='space-y-6' onSubmit={handleSubmit}>
-                    {/* Tanggal */}
-                    <div>
-                        <label htmlFor="tanggal" className='block text-sm font-medium text-gray-700'>Tanggal *</label>
-                        <input type="date" id="tanggal" name="tanggal" value={tanggal} onChange={(e) => setTanggal(e.target.value)} required className='mt-1 p-3 w-full border border-gray-300 rounded-lg' />
+                    {/* Tanggal dan Jam dalam 1 baris */}
+                    <div className='flex flex-col sm:flex-row gap-4'>
+                        <div className='flex-1'>
+                            <label htmlFor="tanggal" className='block text-sm font-medium text-gray-700'>Tanggal *</label>
+                            <input
+                                type="date"
+                                id="tanggal"
+                                name="tanggal"
+                                value={tanggal}
+                                onChange={(e) => setTanggal(e.target.value)}
+                                required
+                                className='mt-1 p-3 w-full border border-gray-300 rounded-lg'
+                            />
+                        </div>
+                        <div className='flex-1'>
+                            <label htmlFor="jam" className='block text-sm font-medium text-gray-700'>Jam *</label>
+                            <input
+                                type="time"
+                                id="jam"
+                                name="jam"
+                                value={jam}
+                                onChange={(e) => setJam(e.target.value)}
+                                required
+                                className='mt-1 p-3 w-full border border-gray-300 rounded-lg'
+                            />
+                        </div>
                     </div>
 
                     {/* Hari */}
                     <div>
                         <label htmlFor="hari" className='block text-sm font-medium text-gray-700'>Hari *</label>
-                        <select id="hari" name="hari" value={hari} onChange={(e) => setHari(e.target.value)} required className='mt-1 p-3 w-full border border-gray-300 rounded-lg'>
-                            <option value="">-- Pilih Hari --</option>
+                        <select
+                            id="hari"
+                            name="hari"
+                            value={hari}
+                            onChange={(e) => setHari(e.target.value)}
+                            required
+                            className='mt-1 p-3 w-full border border-gray-300 rounded-lg'
+                        >
+                            <option value=""> Pilih Hari </option>
                             <option value="senin">Senin</option>
                             <option value="selasa">Selasa</option>
                             <option value="rabu">Rabu</option>
@@ -144,17 +230,17 @@ const CatatPelanggaran = () => {
                         </select>
                     </div>
 
-                    {/* Jam */}
-                    <div>
-                        <label htmlFor="jam" className='block text-sm font-medium text-gray-700'>Jam *</label>
-                        <input type="time" id="jam" name="jam" value={jam} onChange={(e) => setJam(e.target.value)} required className='mt-1 p-3 w-full border border-gray-300 rounded-lg' />
-                    </div>
-
                     {/* Tingkat */}
                     <div>
                         <label htmlFor="tingkat" className='block text-sm font-medium text-gray-700'>Tingkat Kelas *</label>
-                        <select id="tingkat" value={tingkat} onChange={(e) => { setTingkat(e.target.value); setKelas(''); setNama(''); }} required className="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
-                            <option value="">-- Pilih Tingkat --</option>
+                        <select
+                            id="tingkat"
+                            value={tingkat}
+                            onChange={(e) => { setTingkat(e.target.value); setKelas(''); setNama(''); }}
+                            required
+                            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg"
+                        >
+                            <option value=""> Pilih Tingkat </option>
                             {Object.keys(dataMap).map((t) => (
                                 <option key={t} value={t}>{t.toUpperCase()}</option>
                             ))}
@@ -164,8 +250,14 @@ const CatatPelanggaran = () => {
                     {/* Kelas */}
                     <div>
                         <label htmlFor="kelas" className='block text-sm font-medium text-gray-700'>Kelas *</label>
-                        <select id="kelas" value={kelas} onChange={(e) => { setKelas(e.target.value); setNama(''); }} required className="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
-                            <option value="">-- Pilih Kelas --</option>
+                        <select
+                            id="kelas"
+                            value={kelas}
+                            onChange={(e) => { setKelas(e.target.value); setNama(''); }}
+                            required
+                            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg"
+                        >
+                            <option value=""> Pilih Kelas </option>
                             {tingkat && dataMap[tingkat] &&
                                 Object.keys(dataMap[tingkat]).map((kls) => (
                                     <option key={kls} value={kls}>{kls}</option>
@@ -177,8 +269,14 @@ const CatatPelanggaran = () => {
                     {/* Nama Siswa */}
                     <div>
                         <label htmlFor="nama" className='block text-sm font-medium text-gray-700'>Nama Siswa *</label>
-                        <select id="nama" value={nama} onChange={(e) => setNama(e.target.value)} required className="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
-                            <option value="">-- Pilih Nama Siswa --</option>
+                        <select
+                            id="nama"
+                            value={nama}
+                            onChange={(e) => setNama(e.target.value)}
+                            required
+                            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg"
+                        >
+                            <option value=""> Pilih Nama Siswa </option>
                             {getSiswaList().map((s, idx) => (
                                 <option key={idx} value={s.name}>{s.name}</option>
                             ))}
@@ -200,18 +298,89 @@ const CatatPelanggaran = () => {
                         />
                     </div>
 
-                    {/* Bukti Foto */}
+                    {/* Pilihan Upload / Kamera */}
                     <div>
-                        <label htmlFor="bukti" className='block text-sm font-medium text-gray-700'>Upload Foto Bukti *</label>
-                        <input type="file" id="bukti" name="bukti" accept="image/*" onChange={(e) => setBukti(e.target.files[0])} required className='mt-1 p-3 w-full border border-gray-300 rounded-lg' />
+                        <label className='block text-sm font-medium text-gray-700 mb-1'>Upload atau Ambil Foto Bukti *</label>
+                        <div className='flex gap-6 mb-3'>
+                            <label className='inline-flex items-center cursor-pointer'>
+                                <input
+                                    type="radio"
+                                    name="photoOption"
+                                    value="upload"
+                                    checked={!useCamera}
+                                    onChange={() => setUseCamera(false)}
+                                    className="form-radio"
+                                />
+                                <span className='ml-2'>Upload Gambar</span>
+                            </label>
+                            <label className='inline-flex items-center cursor-pointer'>
+                                <input
+                                    type="radio"
+                                    name="photoOption"
+                                    value="camera"
+                                    checked={useCamera}
+                                    onChange={() => setUseCamera(true)}
+                                    className="form-radio"
+                                />
+                                <span className='ml-2'>Ambil Gambar</span>
+                            </label>
+                        </div>
+
+                        {/* Upload file */}
+                        {!useCamera && (
+                            <input
+                                type="file"
+                                id="bukti"
+                                name="bukti"
+                                accept="image/*"
+                                onChange={(e) => {
+                                    if (e.target.files.length > 0) {
+                                        setBukti(e.target.files[0]);
+                                    } else {
+                                        setBukti(null);
+                                    }
+                                }}
+                                required
+                                className='block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100'
+                            />
+                        )}
+
+                        {/* Kamera */}
+                        {useCamera && (
+                            <div className='flex flex-col items-center'>
+                                <video
+                                    ref={videoRef}
+                                    className="w-full max-w-xs rounded border border-gray-300 mb-3"
+                                    autoPlay
+                                    muted
+                                />
+                                <button
+                                    type="button"
+                                    onClick={capturePhoto}
+                                    className="mb-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                                >
+                                    Ambil Foto
+                                </button>
+                                <canvas ref={canvasRef} className="hidden" />
+                                {bukti && (
+                                    <div className="mb-3">
+                                        <img
+                                            src={URL.createObjectURL(bukti)}
+                                            alt="Preview Bukti"
+                                            className="max-w-xs rounded border border-gray-300"
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
 
-                    {/* Submit */}
-                    <div className='flex justify-center'>
-                        <button type="submit" className='mt-6 bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700'>
-                            Submit
-                        </button>
-                    </div>
+                    <button
+                        type="submit"
+                        className='w-full bg-[#186c7c] hover:bg-[#209c88] text-white font-semibold py-3 rounded transition-colors'
+                    >
+                        Simpan
+                    </button>
                 </form>
             </div>
         </div>

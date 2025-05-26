@@ -1,13 +1,40 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../auth/AuthContext'
+import { getStudentViolation } from '../../services/api'
 
 const Dashboard = () => {
     const { user } = useAuth();
+    const id_student = user?.user?.id_student;
+    const [isLoading, setIsLoading] = useState(false);
+    const [siswa, setSiswa] = useState({ name: '', poin: 0 });
+
 
     useEffect(() => {
-        console.log("Auth user object:", user);
-    }, [user]);
+            const fetchData = async () => {
+                if (!id_student) return;
+    
+                try {
+                    setIsLoading(true);
+                    const response = await getStudentViolation({ id_student });
+                    console.log('Response dari API:', response);
+                    if (response.status === 'success') {
+                        const data = response.data;
+                        setSiswa({
+                            name: data.name,
+                            poin: data.total_points
+                        });
+                    }
+                } catch (error) {
+                    console.error('Gagal mengambil data siswa:', error);
+                    Swal.fire('Error', 'Gagal mengambil data siswa', 'error');
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+    
+            fetchData();
+        }, [id_student]);
 
     const [time, setTime] = useState(new Date())
 
@@ -48,9 +75,9 @@ const Dashboard = () => {
 
             {/* Sapaan dan Poin */}
             <div className="text-gray-800 space-y-2">
-              <p className="text-xl font-semibold">Halo, <span className="text-[#186c7c]">{user?.user?.name || "User"}</span> 👋</p>
+              <p className="text-xl font-semibold">Halo, <span className="text-[#186c7c]">{siswa?.name}</span> 👋</p>
               <p className="text-md">Semoga hari ini penuh semangat dan berkah.</p>
-              <p className="text-md">Jumlah Poin Positif: <span className="font-bold text-green-600 text-lg">5</span></p>
+              <p className="text-md">Jumlah Poin Positif: <span className="font-bold text-green-600 text-lg">{siswa?.poin}</span></p>
             </div>
 
             {/* Motivasi */}

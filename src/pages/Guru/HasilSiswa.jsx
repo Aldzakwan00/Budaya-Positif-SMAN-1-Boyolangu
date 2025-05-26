@@ -73,7 +73,6 @@ const HasilSiswa = () => {
               throw new Error('Response tidak valid');
           }
       } catch (error) {
-          console.error('Gagal menyimpan catatan:', error);
           Swal.fire('Error', 'Terjadi kesalahan saat menyimpan catatan.', 'error');
       }
   };
@@ -132,12 +131,14 @@ const HasilSiswa = () => {
         <div className="flex flex-col items-center p-6 min-h-screen bg-gray-50">
             {/* Tombol Kembali */}
             <div className="w-full max-w-3xl mb-4 print:hidden">
-                <button
-                    onClick={handleBack}
-                    className="bg-gray-500 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition"
+            <button
+                    onClick={() => navigate(-1)}
+                    className="px-4 py-2 text-[#186c7c] rounded-lg font-semibold border border-[#186c7c] transition 
+                    hover:text-white hover:bg-[#186c7c] focus:outline-none focus:ring-2 focus:ring-[#186c7c]/60"
+                    aria-label="Kembali"
                 >
                     ← Kembali
-                </button>
+            </button>
             </div>
 
             {/* Area Loading atau Konten */}
@@ -148,7 +149,7 @@ const HasilSiswa = () => {
                     ref={printRef}
                     className="w-full max-w-3xl bg-white p-10 rounded-2xl shadow-xl print:shadow-none print:rounded-none print:p-0 print:m-0"
                 >
-                    <h1 className="text-3xl font-bold text-center text-indigo-700 mb-8 border-b pb-4 border-indigo-300">
+                    <h1 className="text-3xl font-bold text-center text-[#186c7c] mb-8 border-b pb-4 border-indigo-300">
                         Laporan Evaluasi Sikap Siswa
                     </h1>
 
@@ -178,13 +179,13 @@ const HasilSiswa = () => {
 
                     {/* Keterangan */}
                     <section className="mb-8">
-                        <h2 className="text-xl font-semibold text-indigo-600 mb-2">Keterangan</h2>
+                        <h2 className="text-xl font-semibold text-[#186c7c] mb-2">Keterangan</h2>
                         <p className="text-justify">{renderKeterangan()}</p>
                     </section>
 
                     {/* Catatan */}
                     <section className="mb-8">
-                        <h2 className="text-xl font-semibold text-indigo-600 mb-2">Catatan / Apresiasi Guru</h2>
+                        <h2 className="text-xl font-semibold text-[#186c7c] mb-2">Catatan / Apresiasi Guru</h2>
                         {isEditing ? (
                             <textarea
                                 className="w-full border border-gray-300 rounded-md p-3 text-gray-800"
@@ -201,7 +202,7 @@ const HasilSiswa = () => {
                                 <>
                                     <button
                                         onClick={handleSaveComment}
-                                        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                                        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 print:hidden"
                                     >
                                         Simpan
                                     </button>
@@ -233,7 +234,7 @@ const HasilSiswa = () => {
                 <div className="mt-8 print:hidden">
                     <button
                         onClick={handlePrint}
-                        className="bg-indigo-600 text-white px-6 py-2 rounded-lg shadow hover:bg-indigo-700 transition"
+                        className="bg-[#186c7c] text-white px-6 py-2 rounded-lg shadow hover:bg-[#209c88] transition"
                     >
                         Cetak Hasil
                     </button>

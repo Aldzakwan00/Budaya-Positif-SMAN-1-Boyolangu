@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://ciptakode.com/api';
+const API_URL = 'https://api.ciptakode.com/api';
 
 const getAuthHeader = () => {
   const token = localStorage.getItem('authToken');

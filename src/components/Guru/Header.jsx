@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../auth/AuthContext'
 import logo from '../../assets/img/SMAN_1_BOYOLANGU_LOGO.png'
 
@@ -75,12 +75,9 @@ const Header = ({ toggleSidebar }) => {
                 <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-200 z-50">
                     <div className="p-4">
                     <div className="flex items-center space-x-4">
-                        <div className="w-10 h-10 rounded-full bg-gray-400 flex items-center justify-center text-white font-semibold">
-                        {user?.user?.name?.charAt(0) || "U"}
-                        </div>
                         <div>
-                        <h2 className="font-semibold text-gray-900">{user?.user?.name || "User"}</h2>
-                        <p className="text-sm text-gray-600">{user?.user?.username || ""}</p>
+                            <h2 className="font-semibold text-gray-900">{user?.user?.name || "User"}</h2>
+                            <p className="text-sm text-gray-600">{user?.user?.username || ""}</p>
                         </div>
                     </div>
                     </div>

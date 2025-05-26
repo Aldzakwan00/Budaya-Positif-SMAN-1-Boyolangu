@@ -71,9 +71,9 @@ const Individu = () => {
 
     return (
         <div className="flex flex-col items-center justify-start min-h-screen p-4">
-            <h1 className="text-3xl font-bold text-indigo-700 my-8 text-center">Lihat Poin Siswa</h1>
+            <h1 className="text-3xl font-bold text-[#186c7c] my-8 text-center">Lihat Poin Siswa</h1>
 
-            <div className="w-full max-w-xl bg-white p-6 md:p-8 rounded-2xl shadow-lg transition-all">
+            <div className="w-full max-w-xl bg-white p-8 rounded-lg shadow-lg">
                 <form onSubmit={handleSubmit} className="space-y-5">
                     {/* Tingkat */}
                     <div>
@@ -92,7 +92,7 @@ const Individu = () => {
                             required
                             className="mt-2 block w-full p-3 border border-gray-300 rounded-xl"
                         >
-                            <option value="">-- Pilih Tingkat --</option>
+                            <option value=""> Pilih Tingkat </option>
                             {Object.keys(dataMap).map((t) => (
                                 <option key={t} value={t}>{t.toUpperCase()}</option>
                             ))}
@@ -115,7 +115,7 @@ const Individu = () => {
                             required
                             className="mt-2 block w-full p-3 border border-gray-300 rounded-xl"
                         >
-                            <option value="">-- Pilih Kelas --</option>
+                            <option value=""> Pilih Kelas </option>
                             {tingkat && dataMap[tingkat] &&
                                 Object.keys(dataMap[tingkat]).map((kls) => (
                                     <option key={kls} value={kls}>{kls}</option>
@@ -134,7 +134,7 @@ const Individu = () => {
                             required
                             className="mt-2 block w-full p-3 border border-gray-300 rounded-xl"
                         >
-                            <option value="">-- Pilih Nama Siswa --</option>
+                            <option value=""> Pilih Nama Siswa </option>
                             {getSiswaList().map((s) => (
                                 <option key={s.id} value={s.name}>{s.name}</option>
                             ))}
@@ -145,7 +145,7 @@ const Individu = () => {
                     <div className="text-center pt-2">
                         <button
                             type="submit"
-                            className="bg-indigo-600 text-white px-6 py-2 rounded-xl hover:bg-indigo-700"
+                            className="bg-[#186c7c] text-white px-6 py-2 rounded-xl hover:bg-[#209c88] transition duration-200 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             Lihat Poin
                         </button>
@@ -158,7 +158,7 @@ const Individu = () => {
                 <div className="w-full max-w-xl mt-8">
                     {loading ? (
                         <div className="flex justify-center py-8">
-                            <div className="animate-spin rounded-full h-10 w-10 border-b-4 border-indigo-600"></div>
+                            <div className="animate-spin rounded-full h-10 w-10 border-b-4 border-[#186c7c]"></div>
                         </div>
                     ) : selectedSiswa && siswaData ? (
                         <div>
