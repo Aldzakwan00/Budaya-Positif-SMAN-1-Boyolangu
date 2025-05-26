@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom';
 import { 
     FaChevronDown, FaChevronUp, FaTachometerAlt, FaBookOpen, FaPlusCircle, FaUserCheck, FaUsers
 } from 'react-icons/fa';
+import { useAuth } from '../../auth/AuthContext';
 
 const Sidebar = ({ open }) => {
+    const { user } = useAuth();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     const toggleDropdown = () => {
@@ -76,15 +78,17 @@ const Sidebar = ({ open }) => {
                 </li>
                 </ul>
             </li>
-            <li>
-                <Link
-                to="/materi"
-                className="flex items-center gap-3 p-3 text-gray-700 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                >
-                <FaPlusCircle className="text-lg" />
-                <span>Tambah Materi</span>
-                </Link>
-            </li>
+            {user?.role !== 'guru_bk' && (
+                <li>
+                    <Link
+                        to="/materi"
+                        className="flex items-center gap-3 p-3 text-gray-700 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    >
+                        <FaPlusCircle className="text-lg" />
+                        <span>Tambah Materi</span>
+                    </Link>
+                </li>
+            )}
             </ul>
         </div>
         </aside>

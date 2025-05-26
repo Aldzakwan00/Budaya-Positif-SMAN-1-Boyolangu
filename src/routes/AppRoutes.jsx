@@ -8,10 +8,13 @@ import Individu from '../pages/Guru/Individu';
 import Kelas from '../pages/Guru/Kelas';
 import HasilSiswa from '../pages/Guru/HasilSiswa';
 import IsiKelas from '../pages/Guru/IsiKelas';
+import RincianSiswa from '../pages/Guru/RincianSiswa';
 import Materi from '../pages/Guru/Materi';
 import DashboardSiswa from '../pages/Siswa/Dashboard';
+import RincianPelanggaran from '../pages/Siswa/RincianPelanggaran';
 import LihatPelanggaranSiswa from '../pages/Siswa/LihatPelanggaran';
 import Profile from '../pages/Siswa/Profile';
+import MateriSiswa from '../pages/Siswa/Materi';
 import LihatMateri from '../pages/Siswa/LihatMateri';
 import ProtectedRoute from '../auth/ProtectedRoute';
 
@@ -30,15 +33,18 @@ const AppRoutes = () => {
         <Route path="/dashboard-guru" element={<DashboardGuru />} />
         <Route path="/catat-pelanggaran" element={<CatatPelanggaran />} />
         <Route path="/individu" element={<Individu />} />
+        <Route path="/rincian-siswa" element={<RincianSiswa />} />
         <Route path="/kelas" element={<Kelas />} />
         <Route path="/hasil-siswa" element={<HasilSiswa />} />
         <Route path="/kelas/:namaKelas" element={<IsiKelas />} />
         <Route path="/materi" element={<Materi />} />
 
         <Route path="/dashboard-siswa" element={<DashboardSiswa />} />
+        <Route path="/rincian-pelanggaran" element={<RincianPelanggaran />} />
         <Route path="/lihat-pelanggaran-siswa" element={<LihatPelanggaranSiswa />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/lihat-materi" element={<LihatMateri />} />
+        <Route path="/materi-siswa" element={<MateriSiswa />} />
+        <Route path="/materi/:id" element={<LihatMateri />} />
       </Route>
 
       <Route path="*" element={<h1>404 - Not Found</h1>} />

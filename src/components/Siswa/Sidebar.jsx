@@ -22,20 +22,20 @@ const Sidebar = ({ open }) => {
                     </li>
                     <li>
                         <Link
-                            to="/lihat-pelanggaran-siswa"
+                            to="/rincian-pelanggaran"
                             className="flex items-center gap-3 p-3 text-gray-700 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                         >
                             <FaExclamationTriangle className="text-lg" />
-                            <span>Lihat Pelanggaran</span>
+                            <span>Rincian Pelanggaran</span>
                         </Link>
                     </li>
                     <li>
                         <Link
-                            to="/lihat-materi"
+                            to="/materi-siswa"
                             className="flex items-center gap-3 p-3 text-gray-700 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                         >
                             <FaBook className="text-lg" />
-                            <span>Lihat Materi</span>
+                            <span>Materi</span>
                         </Link>
                     </li>
                 </ul>

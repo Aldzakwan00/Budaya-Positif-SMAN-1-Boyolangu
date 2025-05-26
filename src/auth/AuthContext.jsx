@@ -1,44 +1,45 @@
-import React from 'react'
-import { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useState } from 'react';
+import * as api from '../services/api';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [user, setuser] = useState(() => {
+    const [user, setUser] = useState(() => {
         const savedUser = localStorage.getItem('user');
         return savedUser ? JSON.parse(savedUser) : null;
     });
 
-    const login = (username, password) => {
-        const accounts = [
-            { username: 'guru', password: 'guru123', role: 'guru' },
-            { username: 'siswa', password: 'siswa123', role: 'siswa' },
-        ];
+    const login = async (credentials) => {
+        const result = await api.login(credentials);
 
-        const matched = accounts.find(
-            (acc) => acc.username === username && acc.password === password
-        );
-
-        if (matched) {
-            const userData = { username: matched.username, role: matched.role };
-            setuser({ username: matched.username, role: matched.role });
-            localStorage.setItem('user', JSON.stringify(userData));
-            return matched.role;
-        } else {
-            return null;
+        if (result.error) {
+            throw new Error(result.error);
         }
+
+        const userData = {
+            token: result.token,
+            user: result.user,
+            role: result.role.role,
+        };
+
+        localStorage.setItem('token', result.token);
+        localStorage.setItem('user', JSON.stringify(userData));
+        setUser(userData);
+
+        return userData.role;
     };
 
     const logout = () => {
-        setuser(null);
+        setUser(null);
         localStorage.removeItem('user');
+        localStorage.removeItem('token');
     };
 
     return (
         <AuthContext.Provider value={{ user, login, logout }}>
             {children}
         </AuthContext.Provider>
-    )
-}
+    );
+};
 
 export const useAuth = () => useContext(AuthContext);

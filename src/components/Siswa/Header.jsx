@@ -1,30 +1,30 @@
 import React, { useState, useRef, useEffect } from 'react'
-import {Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../auth/AuthContext'
 import logo from '../../assets/img/SMAN_1_BOYOLANGU_LOGO.png'
 
 const Header = ({ toggleSidebar }) => {
-    const { logout } = useAuth()
-    const navigate = useNavigate()
-    const [isProfileOpen, setProfileOpen] = useState(false)
-    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
-    const dropdownRef = useRef()
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
+    const [isProfileOpen, setProfileOpen] = useState(false);
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+    const dropdownRef = useRef();
 
     const handleLogout = () => {
-        logout()
-        navigate("/")
-    }
+        logout();
+        navigate("/");
+    };
 
     const handleClickOutside = (event) => {
         if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setProfileOpen(false)
+            setProfileOpen(false);
         }
-    }
+    };
 
     useEffect(() => {
-        document.addEventListener('mousedown', handleClickOutside)
-        return () => document.removeEventListener('mousedown', handleClickOutside)
-    }, [])
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     return (
         <>
@@ -61,8 +61,10 @@ const Header = ({ toggleSidebar }) => {
                 onClick={() => setProfileOpen(!isProfileOpen)}
                 className="flex items-center space-x-3 text-white bg-slate-800 px-4 py-2 rounded-full hover:bg-slate-700 transition duration-150"
                 >
-                <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-black font-bold">J</div>
-                <span className="hidden sm:inline">John Due</span>
+                <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-black font-bold">
+                    {user?.user?.name?.charAt(0) || "U"}
+                </div>
+                <span className="hidden sm:inline">{user?.user?.name || "User"}</span>
                 <svg className="w-4 h-4 ml-1 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                 </svg>
@@ -74,23 +76,22 @@ const Header = ({ toggleSidebar }) => {
                     <div className="p-4">
                     <div className="flex items-center space-x-4">
                         <div className="w-10 h-10 rounded-full bg-gray-400 flex items-center justify-center text-white font-semibold">
-                        J
+                        {user?.user?.name?.charAt(0) || "U"}
                         </div>
                         <div>
-                        <h2 className="font-semibold text-gray-900">John Due</h2>
-                        <p className="text-sm text-gray-600">john.due@example.com</p>
+                        <h2 className="font-semibold text-gray-900">{user?.user?.name || "User"}</h2>
+                        <p className="text-sm text-gray-600">{user?.user?.username || ""}</p>
                         </div>
                     </div>
                     </div>
                     <div className="border-t border-gray-200"></div>
                     <div className="p-4 space-y-2">
                         <Link 
-                            to="/profile"
-                            className="block w-full text-center bg-[#186c7c] text-white py-2 rounded-lg hover:bg-[#436c75] transition duration-150"
-                        >
-                            Profile
-                        </Link>
-
+                                                    to="/profile"
+                                                    className="block w-full text-center bg-[#186c7c] text-white py-2 rounded-lg hover:bg-[#436c75] transition duration-150"
+                                                >
+                                                    Profile
+                                                </Link>
                         <button
                             onClick={() => setShowLogoutConfirm(true)}
                             className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition duration-150"
@@ -98,7 +99,6 @@ const Header = ({ toggleSidebar }) => {
                             Logout
                         </button>
                     </div>
-
                 </div>
                 )}
             </div>

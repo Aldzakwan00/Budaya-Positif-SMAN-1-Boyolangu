@@ -73,7 +73,7 @@ const IsiKelas = () => {
                             <Link
                                 key={s.id || index}
                                 to="/hasil-siswa"
-                                state={{ siswa: s, namaKelas }}
+                                state={{ id_student: s.id }}
                                 className="block p-5 bg-white rounded-xl shadow hover:shadow-md hover:bg-gray-100 transition transform hover:scale-[1.02]"
                             >
                                 <div className="flex justify-between items-center">

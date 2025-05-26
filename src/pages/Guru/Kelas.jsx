@@ -13,6 +13,7 @@ const Kelas = () => {
         const fetchKelas = async () => {
             try {
                 const data = await getAllStudents();
+                console.log('Data dari getAllStudents:', data);
                 const allKelas = data.flatMap((item) =>
                     item.class_name.map((kelasItem) => ({
                         grade: item.grade,
