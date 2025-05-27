@@ -11,7 +11,7 @@ const Login = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error] = useState("");
-    const [isLoading, setIsLoading] = useState(false); // NEW
+    const [isLoading, setIsLoading] = useState(false); 
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -25,11 +25,11 @@ const Login = () => {
             return;
         }
 
-        setIsLoading(true); // Mulai loading
+        setIsLoading(true);
 
         const result = await login({ username, password });
 
-        setIsLoading(false); // Selesai loading
+        setIsLoading(false); 
 
         if (result.error) {
             Swal.fire({
@@ -47,6 +47,8 @@ const Login = () => {
             navigate("/dashboard-guru");
         } else if (role === "siswa") {
             navigate("/dashboard-siswa");
+        } else if ( role === "admin") {
+            navigate("/admin");
         } else {
             Swal.fire({
                 icon: 'error',

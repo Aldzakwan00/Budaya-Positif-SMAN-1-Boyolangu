@@ -45,7 +45,7 @@ const IsiKelas = () => {
   };
 
   return (
-    <div className="min-h-screen py-10 px-4 flex flex-col items-center bg-gray-50">
+    <div className="min-h-screen py-10 px-4 flex flex-col items-center">
       <div className="w-full max-w-3xl">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold text-[#186c7c]">

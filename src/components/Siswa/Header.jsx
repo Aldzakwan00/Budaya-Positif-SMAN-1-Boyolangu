@@ -86,12 +86,6 @@ const Header = ({ toggleSidebar }) => {
                     </div>
                     <div className="border-t border-gray-200"></div>
                     <div className="p-4 space-y-2">
-                        <Link 
-                                                    to="/profile"
-                                                    className="block w-full text-center bg-[#186c7c] text-white py-2 rounded-lg hover:bg-[#436c75] transition duration-150"
-                                                >
-                                                    Profile
-                                                </Link>
                         <button
                             onClick={() => setShowLogoutConfirm(true)}
                             className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition duration-150"

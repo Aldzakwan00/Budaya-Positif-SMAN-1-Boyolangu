@@ -13,7 +13,6 @@ export const AuthProvider = ({ children }) => {
         const result = await api.login(credentials);
 
         if (!result || result.error || !result.token || !result.user || !result.role) {
-            // Jangan console.error di sini, cukup kembalikan error
             return { error: result?.error || 'Login gagal. Coba lagi.' };
         }
 

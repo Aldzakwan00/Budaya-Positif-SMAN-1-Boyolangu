@@ -170,10 +170,10 @@ const Individu = () => {
                             >
                                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                                     <div>
-                                        <div className="text-lg font-bold text-indigo-600">{siswaData.name}</div>
+                                        <div className="text-lg font-bold text-[#186c7c]">{siswaData.name}</div>
                                         <div className="text-sm text-gray-500">Tingkat: {tingkat.toUpperCase()} - Kelas: {kelas}</div>
                                     </div>
-                                    <div className="bg-indigo-100 text-indigo-800 px-4 py-1 rounded-full font-semibold">
+                                    <div className="border-[#e0f3f5] text-[#186c7c] px-4 py-1 rounded-full font-semibold">
                                         Poin : {siswaData.total_points}
                                     </div>
                                 </div>

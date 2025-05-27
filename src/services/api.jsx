@@ -75,6 +75,31 @@ export const getMaterial = async () => {
   }
 };
 
+export const register = async (data) => {
+  try {
+    const response = await axios.post(`${API_URL}/register`, data, {
+      headers: getAuthHeader(),
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error registering user:', error);
+    throw error;
+  }
+};
+
+
+export const updateSiswa = async (data) => {
+  try {
+    const response = await axios.put(`${API_URL}/updateSiswa`, data, {
+      headers: getAuthHeader(),
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating student:', error);
+    throw error;
+  }
+}
+
 // ==================== POST ====================
 export const postViolation = async (data) => {
   try {

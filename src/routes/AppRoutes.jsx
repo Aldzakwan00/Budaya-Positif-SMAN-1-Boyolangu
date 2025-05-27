@@ -14,10 +14,10 @@ import Materi from '../pages/Guru/Materi';
 import DashboardSiswa from '../pages/Siswa/Dashboard';
 import RincianPelanggaran from '../pages/Siswa/RincianPelanggaran';
 import LihatPelanggaranSiswa from '../pages/Siswa/LihatPelanggaran';
-import Profile from '../pages/Siswa/Profile';
 import MateriSiswa from '../pages/Siswa/Materi';
 import LihatMateri from '../pages/Siswa/LihatMateri';
 import ProtectedRoute from '../auth/ProtectedRoute';
+import Admin from '../pages/Admin/Admin';
 
 const PageWrapper = ({ children }) => (
   <motion.div
@@ -58,10 +58,18 @@ const AppRoutes = () => {
           <Route path="/dashboard-siswa" element={<PageWrapper><DashboardSiswa /></PageWrapper>} />
           <Route path="/rincian-pelanggaran" element={<PageWrapper><RincianPelanggaran /></PageWrapper>} />
           <Route path="/lihat-pelanggaran-siswa" element={<PageWrapper><LihatPelanggaranSiswa /></PageWrapper>} />
-          <Route path="/profile" element={<PageWrapper><Profile /></PageWrapper>} />
           <Route path="/materi-siswa" element={<PageWrapper><MateriSiswa /></PageWrapper>} />
           <Route path="/materi/:id" element={<PageWrapper><LihatMateri /></PageWrapper>} />
+
         </Route>
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+                <Admin />
+            </ProtectedRoute>
+          }
+        />
 
         <Route path="*" element={<h1>404 - Not Found</h1>} />
       </Routes>
