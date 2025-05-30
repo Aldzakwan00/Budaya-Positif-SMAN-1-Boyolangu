@@ -48,7 +48,7 @@ const Login = () => {
         } else if (role === "siswa") {
             navigate("/dashboard-siswa");
         } else if ( role === "admin") {
-            navigate("/admin");
+            navigate("/upload-student");
         } else {
             Swal.fire({
                 icon: 'error',

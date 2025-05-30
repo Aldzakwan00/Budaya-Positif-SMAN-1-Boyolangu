@@ -90,7 +90,7 @@ export const register = async (data) => {
 
 export const updateSiswa = async (data) => {
   try {
-    const response = await axios.put(`${API_URL}/updateSiswa`, data, {
+    const response = await axios.post(`${API_URL}/updateStudent`, data, {
       headers: getAuthHeader(),
     });
     return response.data;
@@ -173,3 +173,29 @@ export const addComment = async (data) => {
     throw error;
   }
 };
+
+export const updateUser = async (data) => {
+  try {
+    const response = await axios.put(`${API_URL}/updatePassword`, data, {
+      headers: getAuthHeader(),
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating user:', error);
+    throw error;
+  }
+};
+
+export const forgetPassword = async (data) => {
+  try {
+    const response = await axios.put(`${API_URL}/forgetPassword`, data, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error in Forget Password:', error);
+    throw error;
+  }
+}

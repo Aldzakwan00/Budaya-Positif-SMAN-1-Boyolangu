@@ -1,13 +1,23 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import * as api from '../services/api';
+import { setCookie, getCookie, deleteCookie } from '../utils/cookieutils';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(() => {
-        const savedUser = localStorage.getItem('user');
-        return savedUser ? JSON.parse(savedUser) : null;
-    });
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const userCookie = getCookie('user');
+        if (userCookie) {
+            try {
+                const parsedUser = JSON.parse(decodeURIComponent(userCookie));
+                setUser(parsedUser);
+            } catch (e) {
+                console.error('Invalid user cookie');
+            }
+        }
+    }, []);
 
     const login = async (credentials) => {
         const result = await api.login(credentials);
@@ -22,8 +32,7 @@ export const AuthProvider = ({ children }) => {
             role: result.role.role,
         };
 
-        localStorage.setItem('token', result.token);
-        localStorage.setItem('user', JSON.stringify(userData));
+        setCookie('user', encodeURIComponent(JSON.stringify(userData)), 1); // 1 hari
         setUser(userData);
 
         return { role: userData.role };
@@ -31,8 +40,7 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         setUser(null);
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
+        deleteCookie('user');
     };
 
     return (

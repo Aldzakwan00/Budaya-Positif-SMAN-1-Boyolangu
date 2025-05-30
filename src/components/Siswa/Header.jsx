@@ -86,6 +86,11 @@ const Header = ({ toggleSidebar }) => {
                     </div>
                     <div className="border-t border-gray-200"></div>
                     <div className="p-4 space-y-2">
+                        <Link
+                            to="/ganti-password"
+                            className="block text-center text-white bg-[#186c7c] hover:bg-[#6ec7d9] px-3 py-2 rounded-lg transition duration-150"
+                        > Ganti Password        
+                        </Link>
                         <button
                             onClick={() => setShowLogoutConfirm(true)}
                             className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition duration-150"

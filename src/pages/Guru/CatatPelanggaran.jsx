@@ -54,30 +54,38 @@ const CatatPelanggaran = () => {
 
     useEffect(() => {
         if (useCamera) {
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                navigator.mediaDevices.getUserMedia({ video: true })
-                    .then(stream => {
-                        videoRef.current.srcObject = stream;
-                        streamRef.current = stream;
-                        videoRef.current.play();
-                    })
-                    .catch(err => {
-                        console.error('Gagal akses kamera:', err);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error Kamera',
-                            text: 'Tidak dapat mengakses kamera. Pastikan izin sudah diberikan.',
+            const constraints = {
+                video: {
+                    facingMode: { exact: "environment" }  // kamera belakang
+                }
+            };
+    
+            navigator.mediaDevices.getUserMedia(constraints)
+                .then(stream => {
+                    videoRef.current.srcObject = stream;
+                    streamRef.current = stream;
+                    videoRef.current.play();
+                })
+                .catch(err => {
+                    console.warn("Kamera belakang tidak tersedia, mencoba kamera default...", err);
+    
+                    // Fallback ke kamera default jika kamera belakang tidak tersedia
+                    navigator.mediaDevices.getUserMedia({ video: true })
+                        .then(stream => {
+                            videoRef.current.srcObject = stream;
+                            streamRef.current = stream;
+                            videoRef.current.play();
+                        })
+                        .catch(err2 => {
+                            console.error("Gagal akses kamera:", err2);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error Kamera',
+                                text: 'Tidak dapat mengakses kamera. Pastikan izin sudah diberikan.',
+                            });
+                            setUseCamera(false);
                         });
-                        setUseCamera(false);
-                    });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error Kamera',
-                    text: 'Browser Anda tidak mendukung akses kamera.',
                 });
-                setUseCamera(false);
-            }
         } else {
             if (streamRef.current) {
                 streamRef.current.getTracks().forEach(track => track.stop());
@@ -86,6 +94,8 @@ const CatatPelanggaran = () => {
             setBukti(null); 
         }
     }, [useCamera]);
+    
+    
 
     const capturePhoto = () => {
         const video = videoRef.current;

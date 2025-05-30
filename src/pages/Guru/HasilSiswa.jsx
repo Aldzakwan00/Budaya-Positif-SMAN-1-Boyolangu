@@ -24,6 +24,7 @@ const HasilSiswa = () => {
         try {
             setIsLoading(true);
             const response = await getStudentViolation({ id_student });
+            console.log('Response:', response);
             if (response.status === 'success') {
             const data = response.data;
             setSiswa({
@@ -95,10 +96,12 @@ const HasilSiswa = () => {
 
     const renderKeterangan = () => {
         if (!siswa) return '';
+        
         return siswa.poin < 5
-        ? `${siswa.name} menunjukkan sikap sangat baik dalam hal kedisiplinan.`
-        : `${siswa.name} perlu mendapatkan perhatian lebih dalam hal kedisiplinan.`;
+            ? `${siswa.name} menunjukkan sikap disiplin yang sangat baik. Ia datang tepat waktu, mengikuti aturan dengan konsisten, dan menjadi contoh positif bagi teman-temannya. Sikap ini patut diapresiasi dan terus dipertahankan demi membentuk karakter yang kuat dan bertanggung jawab.`
+            : `${siswa.name} saat ini masih memerlukan perhatian lebih dalam hal kedisiplinan. Beberapa pelanggaran yang dilakukan menunjukkan perlunya bimbingan dan arahan agar dapat berkembang menjadi pribadi yang lebih tertib dan bertanggung jawab. Diharapkan adanya peran aktif dari guru dan orang tua untuk membantu membentuk sikap disiplin yang lebih baik ke depannya.`;
     };
+    
 
     const LoadingSkeleton = () => (
         <div className="w-full max-w-3xl bg-white p-10 rounded-2xl shadow animate-pulse space-y-6">

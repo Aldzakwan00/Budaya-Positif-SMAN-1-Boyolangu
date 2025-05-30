@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Header from './Header';
 import { register, updateSiswa } from '../../services/api';
 import Swal from 'sweetalert2';
 
@@ -76,7 +75,8 @@ const Admin = () => {
         }
 
         const formData = new FormData();
-        formData.append('file', excelFile);
+        formData.append('excel_file', excelFile);
+        console.log("File yang akan diupload:", excelFile);
 
         setLoading(true);
         try {
@@ -92,7 +92,6 @@ const Admin = () => {
 
     return (
         <div className="min-h-screen bg-white">
-            <Header />
             <div className="pt-28 px-8 max-w-7xl mx-auto">
                 <h1 className="text-3xl font-bold text-[#186c7c] mb-10 text-center">
                     Manajemen Budaya Positif SMAN 1 BOYOLANGU
@@ -159,14 +158,14 @@ const Admin = () => {
                                 <label className="block mb-1 font-medium text-[#186c7c]" htmlFor="id_role">
                                     Role <br />
                                     <small className="text-gray-500 italic text-sm">
-                                        admin = 1, guru = 2, guru_bk = 3, siswa = 4
+                                        guru = 2, guru_bk = 3
                                     </small>
                                 </label>
                                 <input
                                     type="number"
                                     id="id_role"
                                     name="id_role"
-                                    placeholder="Role (1/2/3/4)"
+                                    placeholder="Role (2/3)"
                                     value={registerData.id_role}
                                     onChange={handleRegisterChange}
                                     className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#186c7c]"
