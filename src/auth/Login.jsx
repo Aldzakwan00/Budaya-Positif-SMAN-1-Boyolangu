@@ -41,7 +41,6 @@ const Login = () => {
         }
 
         const role = result.role;
-        console.log('Login successful, role:', role);
 
         if (role === "guru" || role === "guru_bk") {
             navigate("/dashboard-guru");

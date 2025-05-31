@@ -100,6 +100,18 @@ export const updateSiswa = async (data) => {
   }
 }
 
+export const getUsername = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/getUsername`, {
+      headers: getAuthHeader(),
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    throw error;
+  }
+}
+
 // ==================== POST ====================
 export const postViolation = async (data) => {
   try {
@@ -189,9 +201,8 @@ export const updateUser = async (data) => {
 export const forgetPassword = async (data) => {
   try {
     const response = await axios.put(`${API_URL}/forgetPassword`, data, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeader(),
+      'Content-Type': 'application/json',
     });
     return response.data;
   } catch (error) {

@@ -19,7 +19,7 @@ const Layout = () => {
     if (!user) return null;
 
     const isSiswa = user.role === 'siswa';
-    const isGuru = user.role === 'guru';
+    const isGuru = user.role === 'guru' || user.role === 'guru_bk';
     const isAdmin = user.role === 'admin';
 
     return (

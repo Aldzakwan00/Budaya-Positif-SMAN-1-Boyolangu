@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
     FaTachometerAlt, FaUserPlus, FaKey
 } from 'react-icons/fa';
-import { useAuth } from '../../auth/AuthContext';
+
 
 const Sidebar = ({ open }) => {
-    const { user } = useAuth();
     const location = useLocation();
 
     const activeClass = "bg-gradient-to-r from-cyan-600 to-cyan-700 text-white shadow-md";

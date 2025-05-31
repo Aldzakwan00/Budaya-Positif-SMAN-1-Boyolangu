@@ -17,7 +17,6 @@ const Dashboard = () => {
                 try {
                     setIsLoading(true);
                     const response = await getStudentViolation({ id_student });
-                    console.log('Response dari API:', response);
                     if (response.status === 'success') {
                         const data = response.data;
                         setSiswa({

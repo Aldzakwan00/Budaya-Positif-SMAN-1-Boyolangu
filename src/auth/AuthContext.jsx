@@ -6,6 +6,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);  // tambahan loading state
 
     useEffect(() => {
         const userCookie = getCookie('user');
@@ -15,8 +16,12 @@ export const AuthProvider = ({ children }) => {
                 setUser(parsedUser);
             } catch (e) {
                 console.error('Invalid user cookie');
+                setUser(null);
             }
+        } else {
+            setUser(null);
         }
+        setLoading(false); // selesai load cookie
     }, []);
 
     const login = async (credentials) => {
@@ -32,7 +37,7 @@ export const AuthProvider = ({ children }) => {
             role: result.role.role,
         };
 
-        setCookie('user', encodeURIComponent(JSON.stringify(userData)), 1); // 1 hari
+        setCookie('user', encodeURIComponent(JSON.stringify(userData)), 1);
         setUser(userData);
 
         return { role: userData.role };
@@ -44,7 +49,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, logout }}>
+        <AuthContext.Provider value={{ user, login, logout, loading }}>
             {children}
         </AuthContext.Provider>
     );

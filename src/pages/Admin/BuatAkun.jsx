@@ -39,7 +39,6 @@ const BuatAkun = () => {
                 id_role: '',
             });
         } catch (err) {
-            console.error("Error registering user:", err);
             if (err.response?.status === 422) {
                 const errors = err.response.data.errors || {};
                 let messages = Object.entries(errors).map(([field, msgs]) => {

@@ -14,7 +14,6 @@ import Individu from '../pages/Guru/Individu';
 import Kelas from '../pages/Guru/Kelas';
 import HasilSiswa from '../pages/Guru/HasilSiswa';
 import IsiKelas from '../pages/Guru/IsiKelas';
-import RincianSiswa from '../pages/Guru/RincianSiswa';
 import Materi from '../pages/Guru/Materi';
 
 // Siswa
@@ -25,7 +24,6 @@ import MateriSiswa from '../pages/Siswa/Materi';
 import LihatMateri from '../pages/Siswa/LihatMateri';
 
 // Admin
-import Admin from '../pages/Admin/Admin';
 import UploadStudent from '../pages/Admin/UploadStudent';
 import BuatAkun from '../pages/Admin/BuatAkun';
 import ForgetPassword from '../pages/Admin/ForgetPassword';
@@ -62,10 +60,10 @@ const AppRoutes = () => {
           <Route path="/ganti-password" element={<PageWrapper><GantiPassword /></PageWrapper>} />
         </Route>
 
-        {/* Routes khusus Guru */}
+        {/* Routes Guru dan Guru BK (tanpa materi) */}
         <Route
           element={
-            <ProtectedRoute allowedRoles={['guru']}>
+            <ProtectedRoute allowedRoles={['guru', 'guru_bk']}>
               <Layout />
             </ProtectedRoute>
           }
@@ -73,10 +71,19 @@ const AppRoutes = () => {
           <Route path="/dashboard-guru" element={<PageWrapper><DashboardGuru /></PageWrapper>} />
           <Route path="/catat-pelanggaran" element={<PageWrapper><CatatPelanggaran /></PageWrapper>} />
           <Route path="/individu" element={<PageWrapper><Individu /></PageWrapper>} />
-          <Route path="/rincian-siswa" element={<PageWrapper><RincianSiswa /></PageWrapper>} />
           <Route path="/kelas" element={<PageWrapper><Kelas /></PageWrapper>} />
           <Route path="/hasil-siswa" element={<PageWrapper><HasilSiswa /></PageWrapper>} />
           <Route path="/kelas/:namaKelas" element={<PageWrapper><IsiKelas /></PageWrapper>} />
+        </Route>
+
+        {/* Route Materi hanya untuk guru (bukan guru_bk) */}
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={['guru']}>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/materi" element={<PageWrapper><Materi /></PageWrapper>} />
         </Route>
 
