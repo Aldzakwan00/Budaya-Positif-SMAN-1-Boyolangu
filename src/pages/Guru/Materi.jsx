@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
-import { addMaterial, getMaterial } from '../../services/api';
+import { addMaterial, getMaterial, deleteMateri } from '../../services/api';
 
 const Materi = () => {
     const [selectedGrade, setSelectedGrade] = useState('X');
@@ -65,6 +65,30 @@ const Materi = () => {
             setIsUploading(false);
         }
     };
+
+    const handleDelete = async (id) => {
+        const confirm = await Swal.fire({
+            title: 'Yakin ingin menghapus materi ini?',
+            text: 'Tindakan ini tidak dapat dibatalkan.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal',
+        });
+    
+        if (confirm.isConfirmed) {
+            try {
+                await deleteMateri({ id: id }); // Kirim objek data sesuai API
+                Swal.fire('Terhapus!', 'Materi berhasil dihapus.', 'success');
+                fetchMaterial(); // Refresh list materi
+            } catch (err) {
+                Swal.fire('Gagal!', 'Terjadi kesalahan saat menghapus.', 'error');
+            }
+        }
+    };
+    
 
     const renderSkeleton = (count = 6) => {
         return Array.from({ length: count }).map((_, index) => (
@@ -157,11 +181,12 @@ const Materi = () => {
                             className="p-4 bg-white border rounded-lg shadow hover:shadow-md transition flex flex-col justify-between"
                         >
                             <h3 className="font-bold text-lg mb-3" style={{ color: '#186c7c' }}>{materi.name}</h3>
+
                             <a
                                 href={materi.url_material}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-sm text-white text-center px-3 py-2 rounded mt-auto"
+                                className="text-sm text-white text-center px-3 py-2 rounded"
                                 style={{
                                     backgroundColor: '#186c7c',
                                     alignSelf: 'stretch',
@@ -169,7 +194,19 @@ const Materi = () => {
                             >
                                 Download
                             </a>
+
+                            <button
+                                onClick={() => handleDelete(materi.id)}
+                                className="text-sm text-white text-center px-3 py-2 rounded mt-2"
+                                style={{
+                                    backgroundColor: '#d9534f',
+                                    alignSelf: 'stretch',
+                                }}
+                            >
+                                Hapus
+                            </button>
                         </div>
+
                     ))
                 )}
             </div>

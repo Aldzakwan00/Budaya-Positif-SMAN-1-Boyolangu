@@ -210,3 +210,16 @@ export const forgetPassword = async (data) => {
     throw error;
   }
 }
+
+export const deleteMateri = async (data) => {
+  try {
+    console.log('Deleting material with data:', data);
+    const response = await axios.post(`${API_URL}/deleteMaterial`, data, {
+      headers: getAuthHeader(),
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting material:', error);
+    throw error;
+  }
+}

@@ -56,7 +56,7 @@ const CatatPelanggaran = () => {
         if (useCamera) {
             const constraints = {
                 video: {
-                    facingMode: { exact: "environment" }  // kamera belakang
+                    facingMode: { exact: "environment" }  
                 }
             };
     

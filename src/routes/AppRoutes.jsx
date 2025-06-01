@@ -116,7 +116,40 @@ const AppRoutes = () => {
         </Route>
 
         {/* Fallback jika route tidak ditemukan */}
-        <Route path="*" element={<h1>404 - Not Found</h1>} />
+        <Route
+          path="*"
+          element={
+            <motion.div
+              className="min-h-screen flex items-center justify-center bg-white px-4"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -30 }}
+              transition={{ duration: 0.4 }}
+            >
+              <div className="text-center">
+                <h1 className="text-6xl font-bold text-[#186c7c] mb-4">404</h1>
+                <p className="text-xl font-semibold text-gray-700 mb-2">Halaman Tidak Ditemukan</p>
+                <p className="text-gray-500 mb-6">Maaf, halaman yang kamu cari tidak tersedia atau sudah dipindahkan.</p>
+                <a
+                  href="/"
+                  className="inline-flex items-center bg-[#186c7c] text-white px-4 py-2 rounded-lg hover:bg-[#145c6a] transition"
+                >
+                  <svg
+                    className="w-4 h-4 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                  </svg>
+                  Kembali ke Login
+                </a>
+              </div>
+            </motion.div>
+          }
+        />
+
       </Routes>
     </AnimatePresence>
   );
