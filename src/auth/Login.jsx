@@ -43,7 +43,7 @@ const Login = () => {
         const role = result.role;
 
         if (role === "guru" || role === "guru_bk") {
-            navigate("/dashboard-guru");
+            navigate("/catat-pelanggaran");
         } else if (role === "siswa") {
             navigate("/dashboard-siswa");
         } else if ( role === "admin") {

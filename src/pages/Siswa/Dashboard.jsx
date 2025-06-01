@@ -76,7 +76,16 @@ const Dashboard = () => {
             <div className="text-gray-800 space-y-2">
               <p className="text-xl font-semibold">Halo, <span className="text-[#186c7c]">{siswa?.name}</span> 👋</p>
               <p className="text-md">Semoga hari ini penuh semangat dan berkah.</p>
-              <p className="text-md">Jumlah Poin Positif: <span className="font-bold text-green-600 text-lg">{siswa?.poin}</span></p>
+              <p className="text-md">
+                Jumlah Poin Positif:{' '}
+                <span
+                  className={`font-bold text-lg ${
+                    siswa?.poin > 20 ? 'text-red-600' : 'text-green-600'
+                  }`}
+                >
+                  {siswa?.poin}
+                </span>
+              </p>
             </div>
 
             {/* Motivasi */}

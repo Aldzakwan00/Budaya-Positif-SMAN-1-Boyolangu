@@ -28,19 +28,6 @@ const Sidebar = ({ open }) => {
                 <ul className="space-y-2 text-sm font-medium">
                     <li>
                         <Link
-                            to="/dashboard-guru"
-                            className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
-                                location.pathname === '/dashboard-guru'
-                                    ? activeClass
-                                    : 'text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
-                            }`}
-                        >
-                            <FaTachometerAlt className="text-lg" />
-                            <span>Dashboard</span>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link
                             to="/catat-pelanggaran"
                             className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
                                 location.pathname === '/catat-pelanggaran'

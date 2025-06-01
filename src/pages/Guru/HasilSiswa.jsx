@@ -141,7 +141,7 @@ const HasilSiswa = () => {
           {/* Laporan Evaluasi */}
           <div
             ref={contentRef}
-            className="w-full max-w-3xl bg-white p-10 rounded-2xl shadow-xl print:shadow-none print:rounded-none print:p-0 print:m-0"
+            className="w-full max-w-3xl bg-white p-10 rounded-2xl shadow-xl print:shadow-none print:rounded-none print:p-8 print:m-auto print:w-[21cm]"
           >
             <h1 className="text-3xl font-bold text-center text-[#186c7c] mb-8 border-b pb-4 border-indigo-300">
               Laporan Evaluasi Sikap Siswa
@@ -247,8 +247,8 @@ const HasilSiswa = () => {
 
               <div
                 ref={rincianRef}
-                className="bg-white p-8 rounded-2xl shadow-lg print:shadow-none print:rounded-none print:p-0 print:m-0 border border-gray-200"
-              >
+                className="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 print:shadow-none print:rounded-none print:p-8 print:m-auto print:w-[21cm]"
+>
                 <h2 className="text-2xl font-bold text-center text-[#186c7c] mb-6 border-b pb-3 border-indigo-300">
                   Rincian Pelanggaran Siswa
                 </h2>
