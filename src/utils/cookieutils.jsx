@@ -1,6 +1,5 @@
 export const setCookie = (name, value, days) => {
     const expires = new Date(Date.now() + days * 86400000).toUTCString();
-    // Hapus Secure dan SameSite dulu, supaya cookie bisa terbaca di localhost
     document.cookie = `${name}=${value}; expires=${expires}; path=/`;
   };
   

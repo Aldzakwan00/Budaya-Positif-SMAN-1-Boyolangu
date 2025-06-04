@@ -18,6 +18,7 @@ const HasilSiswa = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { id_student } = location.state || {};
+  
 
   useEffect(() => {
     if (!id_student) {
@@ -123,7 +124,7 @@ const HasilSiswa = () => {
   );
 
   return (
-    <div className="flex flex-col items-center p-6 min-h-screen bg-gray-50">
+    <div className="flex flex-col items-center p-6 min-h-screen">
       {/* Tombol Kembali */}
       <div className="w-full max-w-3xl mb-4 print:hidden">
         <button
@@ -269,7 +270,6 @@ const HasilSiswa = () => {
                         <div className="flex-grow">
                           <p className="font-semibold text-lg text-[#186c7c]">{violation}</p>
                           <p className="text-gray-600 text-sm mb-1">{new Date(created_at).toLocaleString()}</p>
-                          <p className="text-gray-800 mb-2 whitespace-pre-line">{comment || '-'}</p>
                           <p className="font-semibold text-red-600">Poin: {poin}</p>
                         </div>
                       </div>

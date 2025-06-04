@@ -20,6 +20,16 @@ const CatatPelanggaran = () => {
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
     const streamRef = useRef(null);
+
+    useEffect(() => {
+        if (tanggal) {
+            const date = new Date(tanggal);
+            const options = { weekday: 'long' };
+            const dayName = date.toLocaleDateString('id-ID', options).toLowerCase(); 
+            setHari(dayName);
+        }
+    }, [tanggal]);
+    
       
 
     useEffect(() => {
@@ -221,23 +231,15 @@ const CatatPelanggaran = () => {
                     {/* Hari */}
                     <div>
                         <label htmlFor="hari" className='block text-sm font-medium text-gray-700'>Hari *</label>
-                        <select
+                        <input
+                            type="text"
                             id="hari"
                             name="hari"
-                            value={hari}
-                            onChange={(e) => setHari(e.target.value)}
-                            required
-                            className='mt-1 p-3 w-full border border-gray-300 rounded-lg'
-                        >
-                            <option value=""> Pilih Hari </option>
-                            <option value="senin">Senin</option>
-                            <option value="selasa">Selasa</option>
-                            <option value="rabu">Rabu</option>
-                            <option value="kamis">Kamis</option>
-                            <option value="jumat">Jumat</option>
-                            <option value="sabtu">Sabtu</option>
-                            <option value="minggu">Minggu</option>
-                        </select>
+                            value={hari.charAt(0).toUpperCase() + hari.slice(1)} // Kapitalisasi pertama
+                            readOnly
+                            className='mt-1 p-3 w-full border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed'
+                        />
+
                     </div>
 
                     {/* Tingkat */}

@@ -30,6 +30,8 @@ const IsiKelas = () => {
 
     setSiswaDenganPoin(mergedData);
     setLoading(false);
+
+    console.log('Siswa dengan poin:', mergedData);
   }, [siswa, violationData]);
 
   const getSortedData = () => {

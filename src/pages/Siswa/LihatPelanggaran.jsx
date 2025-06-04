@@ -87,7 +87,7 @@ const HasilSiswa = () => {
   );
 
   return (
-    <div className="flex flex-col items-center p-6 min-h-screen bg-gray-50">
+    <div className="flex flex-col items-center p-6 min-h-screen ">
       <div className="w-full max-w-3xl mb-4 print:hidden">
         <button
           onClick={() => navigate(-1)}
