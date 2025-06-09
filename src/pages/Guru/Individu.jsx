@@ -1,69 +1,64 @@
 import React, { useState, useEffect } from 'react';
+import Select from 'react-select';
 import { getAllStudents, getStudentViolation } from '../../services/api';
 import { Link } from 'react-router-dom';
 
 const Individu = () => {
-    const [dataMap, setDataMap] = useState({});
-    const [tingkat, setTingkat] = useState('');
-    const [kelas, setKelas] = useState('');
-    const [nama, setNama] = useState('');
-    const [selectedSiswa, setSelectedSiswa] = useState(null);
+    const [students, setStudents] = useState([]);
+    const [selectedOption, setSelectedOption] = useState(null);
     const [siswaData, setSiswaData] = useState(null);
-    const [submitted, setSubmitted] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchStudents = async () => {
             try {
                 const data = await getAllStudents();
-                const map = {};
+                const flatStudents = [];
+
                 data.forEach(item => {
-                    const grade = item.grade.toLowerCase();
-                    map[grade] = map[grade] || {};
                     item.class_name.forEach(cls => {
-                        map[grade][cls.class_name] = cls.student;
+                        cls.student.forEach(s => {
+                            flatStudents.push({
+                                value: s.id,
+                                label: s.name,
+                                grade: item.grade.toUpperCase(),
+                                class_name: cls.class_name
+                            });
+                        });
                     });
                 });
-                setDataMap(map);
+
+                setStudents(flatStudents);
             } catch (err) {
                 console.error('Gagal memuat data siswa:', err);
             }
         };
 
-        fetchData();
+        fetchStudents();
     }, []);
-
-    const getSiswaList = () => {
-        if (tingkat && kelas && dataMap[tingkat] && dataMap[tingkat][kelas]) {
-            return dataMap[tingkat][kelas];
-        }
-        return [];
-    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setSubmitted(true);
+        if (!selectedOption) return;
+
         setLoading(true);
+        setSubmitted(true);
         setSiswaData(null);
 
-        const siswa = getSiswaList().find((s) => s.name === nama);
-        setSelectedSiswa(siswa || null);
-
-        if (siswa) {
-            try {
-                const response = await getStudentViolation({ id_student: siswa.id });
-                if (response.status === 'success') {
-                    setSiswaData({
-                        name: response.data.name,
-                        total_points: response.data.total_points,
-                    });
-                } else {
-                    setSiswaData(null);
-                }
-            } catch (error) {
-                console.error('Gagal mengambil data pelanggaran:', error);
+        try {
+            const response = await getStudentViolation({ id_student: selectedOption.value });
+            if (response.status === 'success') {
+                setSiswaData({
+                    name: response.data.name,
+                    total_points: response.data.total_points,
+                });
+            } else {
                 setSiswaData(null);
             }
+        } catch (error) {
+            console.error('Gagal mengambil data pelanggaran:', error);
+            setSiswaData(null);
         }
 
         setLoading(false);
@@ -75,77 +70,27 @@ const Individu = () => {
 
             <div className="w-full max-w-xl bg-white p-8 rounded-lg shadow-lg">
                 <form onSubmit={handleSubmit} className="space-y-5">
-                    {/* Tingkat */}
                     <div>
-                        <label htmlFor="tingkat" className="text-gray-700 font-medium text-sm">Tingkat Kelas *</label>
-                        <select
-                            id="tingkat"
-                            value={tingkat}
-                            onChange={(e) => {
-                                setTingkat(e.target.value);
-                                setKelas('');
-                                setNama('');
-                                setSelectedSiswa(null);
+                        <label htmlFor="nama" className="text-gray-700 font-medium text-sm">Cari Nama Siswa *</label>
+                        <Select
+                            inputId="nama"
+                            options={students}
+                            value={selectedOption}
+                            onChange={(selected) => {
+                                setSelectedOption(selected);
                                 setSiswaData(null);
                                 setSubmitted(false);
                             }}
-                            required
-                            className="mt-2 block w-full p-3 border border-gray-300 rounded-xl"
-                        >
-                            <option value=""> Pilih Tingkat </option>
-                            {Object.keys(dataMap).map((t) => (
-                                <option key={t} value={t}>{t.toUpperCase()}</option>
-                            ))}
-                        </select>
+                            placeholder="Ketik nama siswa..."
+                            isClearable
+                        />
                     </div>
 
-                    {/* Kelas */}
-                    <div>
-                        <label htmlFor="kelas" className="text-gray-700 font-medium text-sm">Kelas *</label>
-                        <select
-                            id="kelas"
-                            value={kelas}
-                            onChange={(e) => {
-                                setKelas(e.target.value);
-                                setNama('');
-                                setSelectedSiswa(null);
-                                setSiswaData(null);
-                                setSubmitted(false);
-                            }}
-                            required
-                            className="mt-2 block w-full p-3 border border-gray-300 rounded-xl"
-                        >
-                            <option value=""> Pilih Kelas </option>
-                            {tingkat && dataMap[tingkat] &&
-                                Object.keys(dataMap[tingkat]).map((kls) => (
-                                    <option key={kls} value={kls}>{kls}</option>
-                                ))
-                            }
-                        </select>
-                    </div>
-
-                    {/* Nama */}
-                    <div>
-                        <label htmlFor="nama" className="text-gray-700 font-medium text-sm">Nama Siswa *</label>
-                        <select
-                            id="nama"
-                            value={nama}
-                            onChange={(e) => setNama(e.target.value)}
-                            required
-                            className="mt-2 block w-full p-3 border border-gray-300 rounded-xl"
-                        >
-                            <option value=""> Pilih Nama Siswa </option>
-                            {getSiswaList().map((s) => (
-                                <option key={s.id} value={s.name}>{s.name}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {/* Submit */}
                     <div className="text-center pt-2">
                         <button
                             type="submit"
                             className="bg-[#186c7c] text-white px-6 py-2 rounded-xl hover:bg-[#209c88] transition duration-200 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={!selectedOption}
                         >
                             Lihat Poin
                         </button>
@@ -153,25 +98,24 @@ const Individu = () => {
                 </form>
             </div>
 
-            {/* Hasil */}
             {submitted && (
                 <div className="w-full max-w-xl mt-8">
                     {loading ? (
                         <div className="flex justify-center py-8">
                             <div className="animate-spin rounded-full h-10 w-10 border-b-4 border-[#186c7c]"></div>
                         </div>
-                    ) : selectedSiswa && siswaData ? (
+                    ) : selectedOption && siswaData ? (
                         <div>
                             <h2 className="text-xl font-semibold text-gray-800 mb-4">Hasil:</h2>
                             <Link
                                 to="/hasil-siswa"
-                                state={{ id_student: selectedSiswa.id }} 
+                                state={{ id_student: selectedOption.value }}
                                 className="block p-5 bg-white rounded-xl border border-gray-200 shadow hover:shadow-md hover:bg-gray-50 transition"
                             >
                                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                                     <div>
                                         <div className="text-lg font-bold text-[#186c7c]">{siswaData.name}</div>
-                                        <div className="text-sm text-gray-500">Tingkat: {tingkat.toUpperCase()} - Kelas: {kelas}</div>
+                                        <div className="text-sm text-gray-500">Tingkat: {selectedOption.grade} - Kelas: {selectedOption.class_name}</div>
                                     </div>
                                     <div className="border-[#e0f3f5] text-[#186c7c] px-4 py-1 rounded-full font-semibold">
                                         Poin : {siswaData.total_points}

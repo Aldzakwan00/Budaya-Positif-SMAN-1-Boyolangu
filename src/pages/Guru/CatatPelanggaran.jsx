@@ -9,8 +9,8 @@ const CatatPelanggaran = () => {
     const [kelas, setKelas] = useState('');
     const [tingkat, setTingkat] = useState('');
     const [nama, setNama] = useState('');
-    const [dataMap, setDataMap] = useState({});
-    const [grades, setGrades] = useState([]);
+    const [siswaOptions, setSiswaOptions] = useState([]);
+    const [selectedSiswa, setSelectedSiswa] = useState(null);
     const [bukti, setBukti] = useState(null);
     const [tanggal, setTanggal] = useState('');
     const [hari, setHari] = useState('');
@@ -29,28 +29,29 @@ const CatatPelanggaran = () => {
             setHari(dayName);
         }
     }, [tanggal]);
-    
-      
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const studentData = await getAllStudents();
-                const allKelas = studentData.flatMap((item) =>
-                    item.class_name.map((kelasItem) => ({
-                        grade: item.grade,
-                        name: kelasItem.class_name,
-                        student: kelasItem.student,
-                    }))
+
+                const allStudents = studentData.flatMap(item =>
+                    item.class_name.flatMap(kelasItem =>
+                        kelasItem.student.map(s => ({
+                            id: s.id,
+                            name: s.name,
+                            grade: item.grade,
+                            class_name: kelasItem.class_name
+                        }))
+                    )
                 );
-                setKelas('');
-                const map = {};
-                allKelas.forEach(k => {
-                    if (!map[k.grade]) map[k.grade] = {};
-                    map[k.grade][k.name] = k.student;
-                });
-                setDataMap(map);
-                setGrades([...new Set(allKelas.map(k => k.grade))]);
+
+                const options = allStudents.map(s => ({
+                    value: s,
+                    label: s.name
+                }));
+
+                setSiswaOptions(options);
 
                 const violationData = await getViolation();
                 setViolations(violationData.data);
@@ -65,11 +66,9 @@ const CatatPelanggaran = () => {
     useEffect(() => {
         if (useCamera) {
             const constraints = {
-                video: {
-                    facingMode: { exact: "environment" }  
-                }
+                video: { facingMode: { exact: "environment" } }
             };
-    
+
             navigator.mediaDevices.getUserMedia(constraints)
                 .then(stream => {
                     videoRef.current.srcObject = stream;
@@ -77,9 +76,6 @@ const CatatPelanggaran = () => {
                     videoRef.current.play();
                 })
                 .catch(err => {
-                    console.warn("Kamera belakang tidak tersedia, mencoba kamera default...", err);
-    
-                    // Fallback ke kamera default jika kamera belakang tidak tersedia
                     navigator.mediaDevices.getUserMedia({ video: true })
                         .then(stream => {
                             videoRef.current.srcObject = stream;
@@ -101,11 +97,9 @@ const CatatPelanggaran = () => {
                 streamRef.current.getTracks().forEach(track => track.stop());
                 streamRef.current = null;
             }
-            setBukti(null); 
+            setBukti(null);
         }
     }, [useCamera]);
-    
-    
 
     const capturePhoto = () => {
         const video = videoRef.current;
@@ -122,23 +116,10 @@ const CatatPelanggaran = () => {
         }
     };
 
-    const getSiswaList = () => {
-        if (tingkat && kelas && dataMap[tingkat] && dataMap[tingkat][kelas]) {
-            return dataMap[tingkat][kelas];
-        }
-        return [];
-    };
-
     const violationOptions = violations.map(v => ({
         value: v.id,
         label: `${v.name} (Poin: ${v.poin})`
     }));
-
-    const getSelectedStudentId = () => {
-        const siswaList = getSiswaList();
-        const siswa = siswaList.find(s => s.name === nama);
-        return siswa ? siswa.id : null;
-    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -148,26 +129,25 @@ const CatatPelanggaran = () => {
             text: 'Mohon tunggu sebentar',
             allowOutsideClick: false,
             didOpen: () => {
-              Swal.showLoading();
+                Swal.showLoading();
             }
-          });
+        });
 
-        const id_student = getSelectedStudentId();
-        if (!id_student || !selectedViolation || !bukti) {
+        if (!selectedSiswa || !selectedViolation || !bukti) {
             alert('Harap lengkapi semua data terlebih dahulu!');
             return;
         }
 
         const formData = new FormData();
         formData.append('photo', bukti);
-        formData.append('id_student', id_student);
+        formData.append('id_student', selectedSiswa.id);
         formData.append('id_violation', selectedViolation.value);
         formData.append('tanggal', tanggal);
         formData.append('hari', hari);
         formData.append('jam', jam);
 
         try {
-            await postViolation(formData); 
+            await postViolation(formData);
 
             Swal.fire({
                 icon: 'success',
@@ -180,6 +160,7 @@ const CatatPelanggaran = () => {
             setTingkat('');
             setKelas('');
             setNama('');
+            setSelectedSiswa(null);
             setSelectedViolation(null);
             setBukti(null);
             setTanggal('');
@@ -200,26 +181,23 @@ const CatatPelanggaran = () => {
             <h1 className='text-3xl font-semibold text-[#186c7c] mb-10'>KONSEKUENSI POIN BUDAYA POSITIF</h1>
             <div className='bg-white p-8 rounded-lg shadow-lg w-full max-w-lg'>
                 <form className='space-y-6' onSubmit={handleSubmit}>
-                    {/* Tanggal dan Jam dalam 1 baris */}
+                    {/* Tanggal & Jam */}
                     <div className='flex flex-col sm:flex-row gap-4'>
                         <div className='flex-1'>
-                            <label htmlFor="tanggal" className='block text-sm font-medium text-gray-700'>Tanggal *</label>
+                            <label className='block text-sm font-medium text-gray-700'>Tanggal *</label>
                             <input
                                 type="date"
-                                id="tanggal"
-                                name="tanggal"
                                 value={tanggal}
                                 onChange={(e) => setTanggal(e.target.value)}
                                 required
+                                max={new Date().toISOString().split("T")[0]}
                                 className='mt-1 p-3 w-full border border-gray-300 rounded-lg'
                             />
                         </div>
                         <div className='flex-1'>
-                            <label htmlFor="jam" className='block text-sm font-medium text-gray-700'>Jam *</label>
+                            <label className='block text-sm font-medium text-gray-700'>Jam *</label>
                             <input
                                 type="time"
-                                id="jam"
-                                name="jam"
                                 value={jam}
                                 onChange={(e) => setJam(e.target.value)}
                                 required
@@ -230,88 +208,67 @@ const CatatPelanggaran = () => {
 
                     {/* Hari */}
                     <div>
-                        <label htmlFor="hari" className='block text-sm font-medium text-gray-700'>Hari *</label>
+                        <label className='block text-sm font-medium text-gray-700'>Hari *</label>
                         <input
                             type="text"
-                            id="hari"
-                            name="hari"
-                            value={hari.charAt(0).toUpperCase() + hari.slice(1)} // Kapitalisasi pertama
+                            value={hari.charAt(0).toUpperCase() + hari.slice(1)}
                             readOnly
                             className='mt-1 p-3 w-full border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed'
                         />
-
                     </div>
 
-                    {/* Tingkat */}
+                    {/* Pilih Nama Siswa */}
                     <div>
-                        <label htmlFor="tingkat" className='block text-sm font-medium text-gray-700'>Tingkat Kelas *</label>
-                        <select
-                            id="tingkat"
-                            value={tingkat}
-                            onChange={(e) => { setTingkat(e.target.value); setKelas(''); setNama(''); }}
-                            required
-                            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg"
-                        >
-                            <option value=""> Pilih Tingkat </option>
-                            {Object.keys(dataMap).map((t) => (
-                                <option key={t} value={t}>{t.toUpperCase()}</option>
-                            ))}
-                        </select>
+                        <label className='block text-sm font-medium text-gray-700'>Nama Siswa *</label>
+                        <Select
+                            options={siswaOptions}
+                            value={selectedSiswa ? { value: selectedSiswa, label: selectedSiswa.name } : null}
+                            onChange={(e) => {
+                                setSelectedSiswa(e.value);
+                                setNama(e.value.name);
+                                setTingkat(e.value.grade);
+                                setKelas(e.value.class_name);
+                            }}
+                            placeholder="Cari nama siswa..."
+                            isClearable
+                        />
                     </div>
 
-                    {/* Kelas */}
-                    <div>
-                        <label htmlFor="kelas" className='block text-sm font-medium text-gray-700'>Kelas *</label>
-                        <select
-                            id="kelas"
-                            value={kelas}
-                            onChange={(e) => { setKelas(e.target.value); setNama(''); }}
-                            required
-                            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg"
-                        >
-                            <option value=""> Pilih Kelas </option>
-                            {tingkat && dataMap[tingkat] &&
-                                Object.keys(dataMap[tingkat]).map((kls) => (
-                                    <option key={kls} value={kls}>{kls}</option>
-                                ))
-                            }
-                        </select>
-                    </div>
-
-                    {/* Nama Siswa */}
-                    <div>
-                        <label htmlFor="nama" className='block text-sm font-medium text-gray-700'>Nama Siswa *</label>
-                        <select
-                            id="nama"
-                            value={nama}
-                            onChange={(e) => setNama(e.target.value)}
-                            required
-                            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg"
-                        >
-                            <option value=""> Pilih Nama Siswa </option>
-                            {getSiswaList().map((s, idx) => (
-                                <option key={idx} value={s.name}>{s.name}</option>
-                            ))}
-                        </select>
+                    {/* Tampilkan Kelas dan Tingkat */}
+                    <div className='flex gap-4'>
+                        <div className='flex-1'>
+                            <label className='block text-sm font-medium text-gray-700'>Tingkat</label>
+                            <input
+                                type="text"
+                                value={tingkat}
+                                readOnly
+                                className='mt-1 p-3 w-full border border-gray-300 rounded-lg bg-gray-100'
+                            />
+                        </div>
+                        <div className='flex-1'>
+                            <label className='block text-sm font-medium text-gray-700'>Kelas</label>
+                            <input
+                                type="text"
+                                value={kelas}
+                                readOnly
+                                className='mt-1 p-3 w-full border border-gray-300 rounded-lg bg-gray-100'
+                            />
+                        </div>
                     </div>
 
                     {/* Pelanggaran */}
                     <div>
-                        <label htmlFor="pelanggaran" className='block text-sm font-medium text-gray-700 mb-1'>Pelanggaran *</label>
+                        <label className='block text-sm font-medium text-gray-700 mb-1'>Pelanggaran *</label>
                         <Select
-                            id="pelanggaran"
                             options={violationOptions}
                             value={selectedViolation}
                             onChange={setSelectedViolation}
-                            placeholder="Pilih satu pelanggaran"
-                            isSearchable
-                            className="text-left"
-                            classNamePrefix="select"
+                            placeholder="Pilih pelanggaran..."
                         />
                     </div>
 
-                    {/* Pilihan Upload / Kamera */}
-                    <div>
+                     {/* Pilihan Upload / Kamera */}
+                     <div>
                         <label className='block text-sm font-medium text-gray-700 mb-1'>Upload atau Ambil Foto Bukti *</label>
                         <div className='flex gap-6 mb-3'>
                             <label className='inline-flex items-center cursor-pointer'>
