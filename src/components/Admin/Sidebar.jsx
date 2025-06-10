@@ -55,7 +55,7 @@ const Sidebar = ({ open }) => {
                             }`}
                         >
                             <FaKey className="text-lg" />
-                            <span>Lupa Password</span>
+                            <span>Menajemen Akun</span>
                         </Link>
                     </li>
                 </ul>

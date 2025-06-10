@@ -213,13 +213,29 @@ export const forgetPassword = async (data) => {
 
 export const deleteMateri = async (data) => {
   try {
-    console.log('Deleting material with data:', data);
     const response = await axios.post(`${API_URL}/deleteMaterial`, data, {
       headers: getAuthHeader(),
     });
     return response.data;
   } catch (error) {
     console.error('Error deleting material:', error);
+    throw error;
+  }
+}
+
+export const updateUserAccount = () => {
+  return fetch('/updateUserAccount', {
+    method: 'POST',
+  });
+};
+
+export const deleteUserAccount = (data) => {
+  try {
+    return axios.post(`${API_URL}/deleteUser`, data, {
+      headers: getAuthHeader(),
+    });
+  } catch (error) {
+    console.error('Error deleting user account:', error);
     throw error;
   }
 }

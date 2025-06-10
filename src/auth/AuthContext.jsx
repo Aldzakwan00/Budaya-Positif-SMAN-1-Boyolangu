@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
         } else {
             setUser(null);
         }
-        setLoading(false); // selesai load cookie
+        setLoading(false); 
     }, []);
 
     const login = async (credentials) => {

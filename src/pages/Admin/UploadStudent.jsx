@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { updateSiswa } from '../../services/api';
+import { updateSiswa, updateUserAccount } from '../../services/api';
 import Swal from 'sweetalert2';
 
 const UploadStudent = () => {
@@ -21,14 +21,31 @@ const UploadStudent = () => {
         formData.append('excel_file', excelFile);
 
         setLoading(true);
+
+        Swal.fire({
+            title: 'Mohon tunggu...',
+            text: 'Sedang memproses data',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
         try {
-            await updateSiswa(formData);
-            Swal.fire('Berhasil!', 'Update data siswa berhasil!', 'success');
+            await Promise.all([
+                updateUserAccount(),
+                updateSiswa(formData)
+            ]);
+
+            Swal.fire('Berhasil!', 'Update data siswa dan akun berhasil!', 'success');
             setExcelFile(null);
         } catch (err) {
-            Swal.fire('Gagal', 'Gagal mengupdate data siswa.', 'error');
+            Swal.fire('Gagal', 'Terjadi kesalahan saat mengupdate.', 'error');
         } finally {
             setLoading(false);
+            if (Swal.isLoading()) {
+                Swal.close();
+            }
         }
     };
 
