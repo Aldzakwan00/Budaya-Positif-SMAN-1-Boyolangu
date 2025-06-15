@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { useReactToPrint } from 'react-to-print';
+
 
 const SkeletonCard = () => (
   <div className="animate-pulse p-5 bg-white rounded-xl shadow">
@@ -11,69 +13,65 @@ const SkeletonCard = () => (
 const IsiKelas = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { namaKelas, siswa = [], violationData = [] } = location.state || {};
+  const printRef = useRef(null);
 
+  const { namaKelas, siswa = [], violationData = [] } = location.state || {};
   const [sortType, setSortType] = useState('');
   const [siswaDenganPoin, setSiswaDenganPoin] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const handlePrint = useReactToPrint({
+    contentRef: printRef,
+    documentTitle: `Siswa ${namaKelas}`,
+    pageStyle: `@media print { body { -webkit-print-color-adjust: exact; } }`,
+    onAfterPrint: () => console.log('Print completed!'),
+  });
+
   useEffect(() => {
-    const mergedData = siswa.map((s) => {
-      const pelanggaran = violationData.find(
-        (v) => parseInt(v.id_student) === s.id
-      );
-      return {
-        ...s,
-        poin: pelanggaran ? parseInt(pelanggaran.total_points) : 0,
-      };
+    const merged = siswa.map((s) => {
+      const pelanggaran = violationData.find(v => parseInt(v.id_student) === s.id);
+      return { ...s, poin: pelanggaran ? parseInt(pelanggaran.total_points) : 0 };
     });
-
-    setSiswaDenganPoin(mergedData);
+    setSiswaDenganPoin(merged);
     setLoading(false);
-
-    console.log('Siswa dengan poin:', mergedData);
   }, [siswa, violationData]);
 
   const getSortedData = () => {
     let sorted = [...siswaDenganPoin];
-    if (sortType === 'az') {
-      sorted.sort((a, b) => a.name.localeCompare(b.name));
-    } else if (sortType === 'max') {
-      sorted.sort((a, b) => b.poin - a.poin);
-    } else if (sortType === 'min') {
-      sorted.sort((a, b) => a.poin - b.poin);
-    }
+    if (sortType === 'az') sorted.sort((a, b) => a.name.localeCompare(b.name));
+    else if (sortType === 'max') sorted.sort((a, b) => b.poin - a.poin);
+    else if (sortType === 'min') sorted.sort((a, b) => a.poin - b.poin);
     return sorted;
   };
 
   return (
     <div className="min-h-screen py-10 px-4 flex flex-col items-center">
       <div className="w-full max-w-3xl">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex justify-between mb-8">
           <h1 className="text-3xl font-bold text-[#186c7c]">
             Siswa Kelas {namaKelas || '-'}
           </h1>
-          <button
-            onClick={() => navigate(-1)}
-            className="px-4 py-2 text-[#186c7c] rounded-lg font-semibold border border-[#186c7c] transition 
-              hover:text-white hover:bg-[#186c7c] focus:outline-none focus:ring-2 focus:ring-[#186c7c]/60"
-            aria-label="Kembali"
-          >
-            ← Kembali
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={handlePrint}
+              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            >
+              🖨️ Print
+            </button>
+            <button
+              onClick={() => navigate(-1)}
+              className="px-4 py-2 text-[#186c7c] border border-[#186c7c] rounded hover:bg-[#186c7c] hover:text-white"
+            >
+              ← Kembali
+            </button>
+          </div>
         </div>
 
         <div className="mb-6 flex items-center gap-4">
-          <label
-            htmlFor="sort"
-            className="font-medium text-[#186c7c]"
-          >
-            Urutkan:
-          </label>
+          <label htmlFor="sort" className="text-[#186c7c] font-medium">Urutkan:</label>
           <select
             id="sort"
-            className="p-3 border border-[#186c7c] rounded-md shadow-sm text-[#186c7c] font-semibold
-              focus:ring-[#186c7c] focus:border-[#186c7c]"
+            className="p-3 border border-[#186c7c] rounded-md text-[#186c7c] font-semibold"
             onChange={(e) => setSortType(e.target.value)}
             value={sortType}
           >
@@ -84,34 +82,23 @@ const IsiKelas = () => {
           </select>
         </div>
 
-        <div className="space-y-4">
+        <div ref={printRef} className="space-y-4">
           {loading ? (
             <>
               <SkeletonCard />
               <SkeletonCard />
-              <SkeletonCard />
             </>
           ) : getSortedData().length === 0 ? (
-            <div className="text-gray-500 text-center text-lg">
-              Tidak ada siswa di kelas ini.
-            </div>
+            <p className="text-center text-gray-500">Tidak ada siswa.</p>
           ) : (
-            getSortedData().map((s, index) => (
-              <Link
-                key={s.id || index}
-                to="/hasil-siswa"
-                state={{ id_student: s.id }}
-                className="block p-5 bg-white rounded-xl shadow-md text-[#186c7c] font-semibold
-                  transition transform hover:scale-[1.03] hover:underline hover:text-[#14565e]"
-                aria-label={`Lihat hasil siswa ${s.name}`}
+            getSortedData().map((s, i) => (
+              <div
+                key={s.id || i}
+                className="p-4 bg-white rounded shadow flex justify-between"
               >
-                <div className="flex justify-between items-center">
-                  <div className="text-lg">{s.name}</div>
-                  <div className="text-sm font-medium text-[#186c7c]">
-                    Poin: {s.poin}
-                  </div>
-                </div>
-              </Link>
+                <span>{s.name}</span>
+                <span>Poin: {s.poin}</span>
+              </div>
             ))
           )}
         </div>
@@ -121,3 +108,4 @@ const IsiKelas = () => {
 };
 
 export default IsiKelas;
+

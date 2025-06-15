@@ -254,6 +254,25 @@ const HasilSiswa = () => {
                   Rincian Pelanggaran Siswa
                 </h2>
 
+                <section className="grid grid-cols-1 md:grid-cols-2 gap-4 text-base text-gray-800 mb-8">
+                  <div>
+                    <p className="text-gray-500">Nama</p>
+                    <p className="font-semibold">{siswa?.name || '-'}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500">Kelas</p>
+                    <p className="font-semibold">{namaKelas}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500">Jumlah Poin</p>
+                    <p className="font-semibold">{siswa?.poin ?? 0}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500">Kategori</p>
+                    {renderKategori()}
+                  </div>
+                </section>
+
                 {siswa?.violations?.length > 0 ? (
                   <div className="space-y-6">
                     {siswa.violations.map(({ id, photo, violation, created_at, poin, comment }) => (
