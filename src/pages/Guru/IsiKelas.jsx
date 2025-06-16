@@ -23,7 +23,40 @@ const IsiKelas = () => {
   const handlePrint = useReactToPrint({
     contentRef: printRef,
     documentTitle: `Siswa ${namaKelas}`,
-    pageStyle: `@media print { body { -webkit-print-color-adjust: exact; } }`,
+    pageStyle: `
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 10mm;
+      }
+
+      body {
+        -webkit-print-color-adjust: exact;
+        font-size: 11px;
+        line-height: 1.2;
+      }
+
+      .print-title {
+        font-size: 14px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 10px;
+      }
+
+      .print-item {
+        font-size: 10px;
+        padding: 4px 8px;
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid #ccc;
+        page-break-inside: avoid;
+      }
+
+      .space-y-4 > * + * {
+        margin-top: 4px;
+      }
+    }
+  `,
     onAfterPrint: () => console.log('Print completed!'),
   });
 
@@ -83,6 +116,10 @@ const IsiKelas = () => {
         </div>
 
         <div ref={printRef} className="space-y-4">
+          <h1 className="text-2xl font-bold text-center text-[#186c7c] mb-6">
+            Daftar Poin Siswa Kelas {namaKelas || '-'}
+          </h1>
+
           {loading ? (
             <>
               <SkeletonCard />
@@ -92,13 +129,21 @@ const IsiKelas = () => {
             <p className="text-center text-gray-500">Tidak ada siswa.</p>
           ) : (
             getSortedData().map((s, i) => (
-              <div
+              <Link
                 key={s.id || i}
-                className="p-4 bg-white rounded shadow flex justify-between"
+                to="/hasil-siswa"
+                state={{ id_student: s.id }}
+                className="block p-5 bg-white rounded-xl shadow-md text-[#186c7c] font-semibold
+                  transition transform hover:scale-[1.03] hover:underline hover:text-[#14565e]"
+                aria-label={`Lihat hasil siswa ${s.name}`} // ✅ gunakan backtick
               >
-                <span>{s.name}</span>
-                <span>Poin: {s.poin}</span>
-              </div>
+                <div className="flex justify-between items-center">
+                  <div className="text-lg">{s.name}</div>
+                  <div className="text-sm font-medium text-[#186c7c]">
+                    Poin: {s.poin}
+                  </div>
+                </div>
+              </Link>
             ))
           )}
         </div>

@@ -12,6 +12,15 @@ const Gantipassword = () => {
         const newPassword = e.target.newPassword.value;
         const confirmPassword = e.target.confirmPassword.value;
 
+        if (oldPassword === newPassword) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Password Tidak Boleh Sama',
+                text: 'Password baru tidak boleh sama dengan password lama.',
+            });
+            return;
+        }
+
         if (newPassword !== confirmPassword) {
             Swal.fire({
                 icon: 'error',
